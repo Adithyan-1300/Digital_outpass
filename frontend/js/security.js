@@ -1,0 +1,438 @@
+// Security Module JavaScript
+
+async function loadSecurityDashboard() {
+    try {
+        const response = await fetch(`${app.API_BASE}/security/dashboard-stats`);
+        const data = await response.json();
+
+        if (data.success) {
+            const stats = data.stats;
+            document.getElementById('moduleContent').innerHTML = `
+                <div style="margin-bottom: 32px;">
+                    <h2 style="font-size: 32px; font-weight: 700;">Security Command</h2>
+                    <p style="color: var(--text-muted);">Real-time monitoring and gate control.</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="modern-card">
+                        <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i class="ph ph-map-pin"></i></div>
+                        <div>
+                            <div class="stat-value">${stats.students_currently_out || 0}</div>
+                            <div class="stat-label">Currently Outside</div>
+                        </div>
+                    </div>
+                    <div class="modern-card">
+                        <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="ph ph-arrow-square-out"></i></div>
+                        <div>
+                            <div class="stat-value">${stats.exits_today || 0}</div>
+                            <div class="stat-label">Exits Today</div>
+                        </div>
+                    </div>
+                    <div class="modern-card">
+                        <div class="stat-icon" style="background: rgba(79, 70, 229, 0.1); color: var(--primary);"><i class="ph ph-arrow-square-in"></i></div>
+                        <div>
+                            <div class="stat-value">${stats.entries_today || 0}</div>
+                            <div class="stat-label">Entries Today</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="glass-panel" style="background: white; padding: 32px; border: none;">
+                    <div style="margin-bottom: 24px;">
+                        <h3 style="font-size: 20px; font-weight: 600;">Gate Controls</h3>
+                    </div>
+                    <div style="display: flex; gap: 16px;">
+                        <button onclick="loadModule('scan-qr')" class="btn-modern btn-modern-primary" style="display: flex; align-items: center; gap: 12px; padding: 16px 32px; font-size: 16px;">
+                            <i class="ph ph-qr-code" style="font-size: 24px;"></i> Scan Pass
+                        </button>
+                        <button onclick="loadModule('students-out')" class="btn-modern" style="background: #f1f5f9; color: var(--text-main); display: flex; align-items: center; gap: 12px; padding: 16px 32px;">
+                            <i class="ph ph-users-four"></i> Track Outs
+                        </button>
+                    </div>
+                </div>
+            `;
+        } else {
+            document.getElementById('moduleContent').innerHTML = `<div class="card"><p>${data.message || 'Error loading dashboard'}</p></div>`;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+async function loadScanQR() {
+    document.getElementById('moduleContent').innerHTML = `
+        <div class="glass-panel" style="background: white; padding: 40px; border: none; max-width: 600px; margin: 0 auto; text-align: center;">
+            <div style="margin-bottom: 32px;">
+                <h2 style="font-size: 28px; margin-bottom: 8px;">Scan Outpass</h2>
+                <p style="color: var(--text-muted);">Point camera at QR or enter code manually.</p>
+            </div>
+            
+            <div style="max-width: 600px; margin: 0 auto;">
+                <!-- Camera Scanner -->
+                <div id="scannerSection" style="margin-bottom: 32px;">
+                    <div style="display: flex; justify-content: center; gap: 12px; margin-bottom: 20px;">
+                        <button onclick="startScanner()" class="btn-modern btn-modern-primary" id="startScanBtn" style="display: flex; align-items: center; gap: 8px;">
+                            <i class="ph ph-camera"></i> Activate Camera
+                        </button>
+                        <button onclick="stopScanner()" class="btn-modern" id="stopScanBtn" style="display: none; background: #fee2e2; color: var(--danger);">
+                            <i class="ph ph-stop"></i> Stop Scanner
+                        </button>
+                    </div>
+                    <div id="qr-reader" style="width: 100%; display: none; border-radius: 12px; overflow: hidden; border: 2px solid var(--primary);"></div>
+                </div>
+                
+                <!-- Manual Entry Option -->
+                <div style="padding-top: 32px; border-top: 1px solid #f1f5f9;">
+                    <h3 style="font-size: 16px; margin-bottom: 16px; color: var(--text-muted);">Manual Verification</h3>
+                    <div class="form-group" style="text-align: left;">
+                        <input type="text" id="qrInput" class="form-control" 
+                               placeholder="Paste or type QR token here..." style="font-family: monospace; text-align: center; font-size: 16px; letter-spacing: 1px;">
+                    </div>
+                    
+                    <button onclick="verifyQRCode()" class="btn-modern btn-modern-primary" style="width: 100%; margin-top: 16px; padding: 16px;">
+                        Verify Outpass
+                    </button>
+                </div>
+                
+                <div id="qrResult" style="margin-top: 32px;"></div>
+            </div>
+        </div>
+    `;
+
+    // Auto-submit on Enter key
+    setTimeout(() => {
+        const qrInput = document.getElementById('qrInput');
+        if (qrInput) {
+            qrInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    verifyQRCode();
+                }
+            });
+        }
+    }, 100);
+}
+
+let html5QrCode = null;
+
+async function startScanner() {
+    const readerDiv = document.getElementById('qr-reader');
+    const startBtn = document.getElementById('startScanBtn');
+    const stopBtn = document.getElementById('stopScanBtn');
+
+    readerDiv.style.display = 'block';
+    startBtn.style.display = 'none';
+    stopBtn.style.display = 'inline-block';
+
+    html5QrCode = new Html5Qrcode("qr-reader");
+
+    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+    try {
+        const cameras = await Html5Qrcode.getCameras();
+        if (cameras && cameras.length > 0) {
+            // Priority: Try to find a back camera, otherwise use the first one
+            let cameraId = cameras[0].id;
+            const backCamera = cameras.find(c =>
+                c.label.toLowerCase().includes('back') ||
+                c.label.toLowerCase().includes('rear') ||
+                c.label.toLowerCase().includes('environment')
+            );
+            if (backCamera) cameraId = backCamera.id;
+
+            console.log('Starting camera with ID:', cameraId);
+
+            try {
+                await html5QrCode.start(
+                    cameraId,
+                    config,
+                    (decodedText) => {
+                        document.getElementById('qrInput').value = decodedText;
+                        stopScanner();
+                        verifyQRCodeFromScan(decodedText);
+                    },
+                    (errorMessage) => { }
+                );
+            } catch (innerErr) {
+                console.warn('Manual ID start failed, trying generic start:', innerErr);
+                // Last ditch effort: Let the library choose
+                await html5QrCode.start(
+                    { facingMode: "user" }, // Use "user" as a fallback for laptops
+                    config,
+                    (decodedText) => {
+                        document.getElementById('qrInput').value = decodedText;
+                        stopScanner();
+                        verifyQRCodeFromScan(decodedText);
+                    },
+                    (errorMessage) => { }
+                );
+            }
+        } else {
+            throw new Error('No cameras found on this device.');
+        }
+    } catch (err) {
+        console.error('Final Scanner failure:', err);
+        alert('CAMERA ACCESS ERROR\n\n1. Check if another app (Zoom, Teams, etc.) is using your camera.\n2. Ensure you have clicked "Allow" in the browser popup.\n3. Try refreshing the page (F5).\n\nDetails: ' + err.message);
+        readerDiv.style.display = 'none';
+        startBtn.style.display = 'inline-block';
+        stopBtn.style.display = 'none';
+    }
+}
+
+async function stopScanner() {
+    if (html5QrCode) {
+        try {
+            await html5QrCode.stop();
+            html5QrCode = null;
+        } catch (err) {
+            console.error('Error stopping scanner:', err);
+        }
+    }
+
+    const readerDiv = document.getElementById('qr-reader');
+    const startBtn = document.getElementById('startScanBtn');
+    const stopBtn = document.getElementById('stopScanBtn');
+
+    if (readerDiv) readerDiv.style.display = 'none';
+    if (startBtn) startBtn.style.display = 'inline-block';
+    if (stopBtn) stopBtn.style.display = 'none';
+}
+
+async function verifyQRCodeFromScan(qrCode) {
+    const resultDiv = document.getElementById('qrResult');
+
+    if (!qrCode) {
+        resultDiv.innerHTML = '<div class="error-message show">Please scan a QR code</div>';
+        return;
+    }
+
+    resultDiv.innerHTML = '<div class="loading">Verifying...</div>';
+
+    try {
+        const response = await fetch(`${app.API_BASE}/security/verify-qr`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ qr_code: qrCode })
+        });
+
+        const data = await response.json();
+
+        if (data.valid) {
+            resultDiv.innerHTML = `
+                <div class="success-message show" style="padding: 24px; border-radius: 12px; border: none; background: #ecfdf5; color: #065f46;">
+                    <div style="font-size: 48px; margin-bottom: 16px;">✓</div>
+                    <h3 style="margin-bottom: 20px;">Valid Outpass</h3>
+                    <div style="text-align: left; background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <p style="margin-bottom: 8px;"><strong>Student:</strong> ${data.student.name}</p>
+                        <p style="margin-bottom: 8px;"><strong>Reg No:</strong> ${data.student.registration_no}</p>
+                        <p style="margin-bottom: 8px;"><strong>Dept:</strong> ${data.student.department}</p>
+                        <p style="margin-bottom: 8px;"><strong>Reason:</strong> ${data.outpass.reason}</p>
+                    </div>
+                    <button onclick="recordExit('${qrCode}')" class="btn-modern btn-modern-primary" style="width: 100%;">
+                        Confirm Exit
+                    </button>
+                </div>
+            `;
+        } else {
+            resultDiv.innerHTML = `
+                <div class="error-message show">
+                    <h3>✗ Invalid QR Code</h3>
+                    <p>${data.message}</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        resultDiv.innerHTML = `<div class="error-message show">Error verifying QR code.</div>`;
+    }
+}
+
+async function verifyQRCode() {
+    const qrCode = document.getElementById('qrInput').value.trim();
+    const resultDiv = document.getElementById('qrResult');
+
+    if (!qrCode) {
+        resultDiv.innerHTML = '<div class="error-message show">Please enter a QR code</div>';
+        return;
+    }
+
+    verifyQRCodeFromScan(qrCode);
+}
+
+async function recordExit(qrCode) {
+    try {
+        const response = await fetch(`${app.API_BASE}/security/scan-qr`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ qr_code: qrCode })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            document.getElementById('qrResult').innerHTML = `
+                <div class="success-message show" style="padding: 32px; border-radius: 12px; background: #ecfdf5;">
+                    <div style="font-size: 48px; color: var(--success); margin-bottom: 16px;">✓</div>
+                    <h3 style="margin-bottom: 8px; color: #065f46;">Record Updated</h3>
+                    <p style="color: #065f46; margin-bottom: 24px;">Exit recorded for ${data.student.name}</p>
+                    <button onclick="loadModule('scan-qr')" class="btn-modern btn-modern-primary">
+                        Scan Next Pass
+                    </button>
+                </div>
+            `;
+            document.getElementById('qrInput').value = '';
+        } else {
+            document.getElementById('qrResult').innerHTML = `<div class="error-message show">${data.message}</div>`;
+        }
+    } catch (error) {
+        alert('Error recording exit');
+    }
+}
+
+async function loadStudentsOut() {
+    try {
+        const response = await fetch(`${app.API_BASE}/security/students-out`);
+        const data = await response.json();
+
+        if (data.success) {
+            let html = `
+                <div style="margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h2 style="font-size: 28px; font-weight: 700;">Students Currently Out</h2>
+                        <p style="color: var(--text-muted);">${data.count} students outside campus.</p>
+                    </div>
+                    <button onclick="loadModule('security-dashboard')" class="btn-modern" style="background: #f1f5f9; color: var(--text-main);"><i class="ph ph-arrow-left"></i> Back</button>
+                </div>
+                
+                <div class="table-wrapper">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Department</th>
+                                <th>Exit Time</th>
+                                <th>Exp. Return</th>
+                                <th>Reason</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            if (data.students_out.length === 0) {
+                html += `<tr><td colspan="6" style="text-align: center; padding: 48px; color: var(--text-muted);">No students are currently outside campus.</td></tr>`;
+            } else {
+                data.students_out.forEach(student => {
+                    html += `
+                        <tr>
+                            <td>
+                                <div style="font-weight: 600;">${student.student_name}</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">${student.registration_no}</div>
+                            </td>
+                            <td>${student.dept_name}</td>
+                            <td>${app.formatDateTime(student.actual_exit_time)}</td>
+                            <td style="color: var(--warning); font-weight: 500;">${app.formatTime(student.expected_return_time)}</td>
+                            <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${student.reason || '-'}</td>
+                            <td>
+                                <div style="display: flex; justify-content: flex-end;">
+                                    <button onclick="recordEntryManual(${student.outpass_id})" 
+                                            class="btn-modern" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">Entry</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            html += `</tbody></table></div>`;
+            document.getElementById('moduleContent').innerHTML = html;
+        } else {
+            document.getElementById('moduleContent').innerHTML = `<div class="card"><p>${data.message || 'Error loading list'}</p></div>`;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+async function recordEntryManual(outpassId) {
+    if (!confirm('Record entry for this student?')) return;
+
+    try {
+        const response = await fetch(`${app.API_BASE}/security/record-entry`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ outpass_id: outpassId })
+        });
+
+        const data = await response.json();
+        alert(data.message);
+
+        if (data.success) {
+            loadModule('students-out');
+        }
+    } catch (error) {
+        alert('Error recording entry');
+    }
+}
+
+async function loadRecentActivity() {
+    try {
+        const response = await fetch(`${app.API_BASE}/security/recent-activity?limit=50`);
+        const data = await response.json();
+
+        if (data.success) {
+            let html = `
+                <div style="margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="font-size: 28px; font-weight: 700;">Recent Activity</h2>
+                    <button onclick="loadModule('security-dashboard')" class="btn-modern" style="background: #f1f5f9; color: var(--text-main);"><i class="ph ph-arrow-left"></i> Dashboard</button>
+                </div>
+                
+                <div class="table-wrapper">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Student Identity</th>
+                                <th>Department</th>
+                                <th>Exit Recorded</th>
+                                <th>Return Recorded</th>
+                                <th>Purpose</th>
+                                <th style="text-align: right;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            if (data.activities.length === 0) {
+                html += `<tr><td colspan="6" style="text-align: center; padding: 48px; color: var(--text-muted);">No recorded activity today.</td></tr>`;
+            } else {
+                data.activities.forEach(activity => {
+                    const status = activity.actual_entry_time ? 'Returned' : 'Out';
+                    html += `
+                        <tr>
+                            <td>
+                                <div style="font-weight: 600;">${activity.student_name}</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">${activity.registration_no}</div>
+                            </td>
+                            <td>${activity.dept_name}</td>
+                            <td>${app.formatDateTime(activity.actual_exit_time)}</td>
+                            <td>${activity.actual_entry_time ? app.formatDateTime(activity.actual_entry_time) : '<span style="color: var(--danger);">Still Out</span>'}</td>
+                            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${activity.reason}</td>
+                            <td>
+                                <div style="display: flex; justify-content: flex-end;">
+                                    <span class="status-badge ${status === 'Returned' ? 'badge-approved' : 'badge-pending'}">
+                                        ${status}
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            html += `</tbody></table></div>`;
+            document.getElementById('moduleContent').innerHTML = html;
+        } else {
+            document.getElementById('moduleContent').innerHTML = `<div class="card"><p>${data.message || 'Error loading activity'}</p></div>`;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
