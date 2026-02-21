@@ -60,7 +60,7 @@ if __name__ == '__main__':
     
     # Check if database should be initialized
     # initialize = input("Initialize database with schema and sample data? (yes/no): ").lower()
-    initialize = 'no'
+    initialize = 'yes'
     if initialize == 'yes':
         print("\nInitializing database...")
         if init_db():
