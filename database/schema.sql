@@ -16,6 +16,7 @@ CREATE TABLE departments (
 );
 
 -- Users Table (Students, Staff, HOD, Security, Admin)
+-- Users Table (Updated with Parent details)
 CREATE TABLE users (
     user_id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -26,10 +27,13 @@ CREATE TABLE users (
     dept_id INT,
     registration_no VARCHAR(50) UNIQUE,
     phone VARCHAR(15),
+    -- These two lines were missing and causing your error:
+    parent_name VARCHAR(100),
+    parent_mobile VARCHAR(15),
     advisor_id INT,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (dept_id) REFERENCES departments(dept_id),
+    FOREIGN KEY (dept_id) REFERENCsES departments(dept_id),
     FOREIGN KEY (advisor_id) REFERENCES users(user_id)
 );
 
