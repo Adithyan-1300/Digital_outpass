@@ -111,28 +111,28 @@ def logout():
         print(f"Logout error: {e}")
         return jsonify({'success': False, 'message': 'Error during logout'}), 500
 
-@auth_bp.route('/session', methods=['GET'])
-def check_session():
-    """Check if user is logged in and return session data"""
+@auth_bp.route('/departments', methods=['GET'])
+def get_departments():
+    """Fetch all departments for the registration dropdown"""
     try:
-        if 'user_id' not in session:
-            return jsonify({'logged_in': False}), 200
+        conn = get_db_connection()
+        if not conn:
+            return jsonify({'success': False, 'message': 'Database connection failed'}), 500
+        
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT dept_id, dept_name, dept_code FROM departments ORDER BY dept_name")
+        departments = cursor.fetchall()
+        
+        cursor.close()
+        conn.close()
         
         return jsonify({
-            'logged_in': True,
-            'user': {
-                'user_id': session.get('user_id'),
-                'username': session.get('username'),
-                'full_name': session.get('full_name'),
-                'role': session.get('role'),
-                'email': session.get('email'),
-                'dept_id': session.get('dept_id')
-            }
+            'success': True, 
+            'departments': departments
         }), 200
-        
     except Exception as e:
-        print(f"Session check error: {e}")
-        return jsonify({'logged_in': False}), 200
+        print(f"Error fetching departments: {e}")
+        return jsonify({'success': False, 'message': 'Failed to load departments'}), 500
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
