@@ -8,9 +8,9 @@ async function loadAdminDashboard() {
         if (data.success) {
             const report = data.report;
             document.getElementById('moduleContent').innerHTML = `
-                <div style="margin-bottom: 32px;">
-                    <h2 style="font-size: 32px; font-weight: 700;">Admin Central</h2>
-                    <p style="color: var(--text-muted);">System-wide oversight and configuration management.</p>
+                <div class="mb-8" style="animation: fadeIn 0.4s ease-out;">
+                    <h2 class="login-title" style="font-size: 2.25rem;">Admin Central</h2>
+                    <p style="color: var(--text-muted); font-size: 1rem;">System-wide oversight and configuration management.</p>
                 </div>
                 
                 <div class="stats-grid">
@@ -37,18 +37,18 @@ async function loadAdminDashboard() {
                     </div>
                 </div>
                 
-                <div class="glass-panel" style="background: white; padding: 32px; border: none;">
-                    <div style="margin-bottom: 24px;">
-                        <h3 style="font-size: 20px; font-weight: 600;">System Controls</h3>
+                <div class="glass-panel" style="background: white; border: none;">
+                    <div class="mb-4">
+                        <h3 style="font-size: 1.25rem; font-weight: 600;">System Controls</h3>
                     </div>
-                    <div style="display: flex; gap: 16px;">
-                        <button onclick="loadModule('manage-users')" class="btn-modern btn-modern-primary" style="display: flex; align-items: center; gap: 8px;">
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button onclick="loadModule('manage-users')" class="btn-modern btn-modern-primary" style="width: auto;">
                             <i class="ph ph-user-list"></i> Manage Staff & Students
                         </button>
-                        <button onclick="loadModule('manage-departments')" class="btn-modern" style="background: #f1f5f9; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                        <button onclick="loadModule('manage-departments')" class="btn-modern" style="background: #f1f5f9; color: var(--text-main); width: auto;">
                             <i class="ph ph-buildings"></i> Departments
                         </button>
-                        <button onclick="loadModule('system-reports')" class="btn-modern" style="background: #f1f5f9; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                        <button onclick="loadModule('system-reports')" class="btn-modern" style="background: #f1f5f9; color: var(--text-main); width: auto;">
                             <i class="ph ph-file-pdf"></i> Audit Reports
                         </button>
                     </div>
@@ -69,34 +69,35 @@ async function loadManageUsers() {
 
         if (data.success) {
             let html = `
-                <div style="margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center;">
+                <div class="mb-8" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                     <div>
-                        <h2 style="font-size: 28px; font-weight: 700;">User Management</h2>
-                        <p style="color: var(--text-muted);">Control access and roles across the institution.</p>
+                        <h2 class="login-title" style="font-size: 1.75rem;">User Management</h2>
+                        <p style="color: var(--text-muted); font-size: 1rem;">Control institution-wide access.</p>
                     </div>
-                    <button onclick="showAddUserForm()" class="btn-modern btn-modern-primary" style="display: flex; align-items: center; gap: 8px;">
+                    <button onclick="showAddUserForm()" class="btn-modern btn-modern-primary" style="width: auto;">
                         <i class="ph ph-user-plus"></i> Add New User
                     </button>
                 </div>
                 
-                <div class="glass-panel" style="background: white; padding: 16px; margin-bottom: 24px; border: none; display: flex; align-items: center; gap: 20px;">
-                    <div style="flex: 1; position: relative;">
-                        <i class="ph ph-magnifying-glass" style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
-                        <input type="text" placeholder="Search users by name or email..." style="width: 100%; padding: 10px 10px 10px 40px; border-radius: 8px; border: 1px solid #e2e8f0;" onkeyup="searchUsers(this.value)">
+                <div class="glass-panel" style="background: white; border: none; display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                    <div style="flex: 1; min-width: 250px; position: relative;">
+                        <i class="ph ph-magnifying-glass" style="position: absolute; left: 0.75rem; top: 0.75rem; color: var(--text-muted);"></i>
+                        <input type="text" placeholder="Search users by name or email..." style="width: 100%; padding: 0.625rem 0.625rem 0.625rem 2.5rem; border-radius: 0.5rem; border: 1px solid #e2e8f0;" onkeyup="searchUsers(this.value)">
                     </div>
                     <div>
-                        <select id="roleFilter" onchange="filterUsersByRole(this.value)" style="padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; min-width: 150px;">
+                        <select id="roleFilter" onchange="filterUsersByRole(this.value)" style="padding: 0.625rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; min-width: 150px; width: 100%;">
                             <option value="">All Roles</option>
-                            <option value="student">Students Only</option>
-                            <option value="staff">Staff Only</option>
-                            <option value="hod">HODs Only</option>
-                            <option value="security">Security Only</option>
-                            <option value="admin">Admins Only</option>
+                            <option value="student">Students</option>
+                            <option value="staff">Staff</option>
+                            <option value="hod">HODs</option>
+                            <option value="security">Security</option>
+                            <option value="admin">Admins</option>
                         </select>
                     </div>
                 </div>
                 
                 <div class="table-wrapper">
+                    <div class="table-responsive">
                     <table class="modern-table" id="usersTable">
                         <thead>
                             <tr>
@@ -160,7 +161,7 @@ async function loadManageUsers() {
                 `;
             });
 
-            html += `</tbody></table></div>`;
+            html += `</tbody></table></div></div>`;
             document.getElementById('moduleContent').innerHTML = html;
         } else {
             document.getElementById('moduleContent').innerHTML = `<div class="card"><p>${data.message || 'Error loading users'}</p></div>`;
@@ -477,24 +478,25 @@ async function loadManageDepartments() {
 
         if (data.success) {
             let html = `
-                <div style="margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center;">
+                <div class="mb-8" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                     <div>
-                        <h2 style="font-size: 28px; font-weight: 700;">Department Management</h2>
-                        <p style="color: var(--text-muted);">Manage academic divisions and their assigned personnel.</p>
+                        <h2 class="login-title" style="font-size: 1.75rem;">Department Management</h2>
+                        <p style="color: var(--text-muted); font-size: 1rem;">Manage academic divisions.</p>
                     </div>
-                    <button onclick="showAddDeptForm()" class="btn-modern btn-modern-primary" style="display: flex; align-items: center; gap: 8px;">
-                        <i class="ph ph-plus-circle"></i> Add Department
+                    <button onclick="showAddDeptForm()" class="btn-modern btn-modern-primary" style="width: auto;">
+                        <i class="ph ph-plus-circle"></i> Add Dept
                     </button>
                 </div>
                 
-                <div class="glass-panel" style="background: white; padding: 16px; margin-bottom: 24px; border: none; display: flex; align-items: center; gap: 20px;">
-                    <div style="flex: 1; position: relative;">
-                        <i class="ph ph-magnifying-glass" style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
-                        <input type="text" placeholder="Search departments by name or code..." style="width: 100%; padding: 10px 10px 10px 40px; border-radius: 8px; border: 1px solid #e2e8f0;" onkeyup="searchDepartments(this.value)">
+                <div class="glass-panel" style="background: white; border: none; margin-bottom: 1.5rem;">
+                    <div style="position: relative;">
+                        <i class="ph ph-magnifying-glass" style="position: absolute; left: 0.75rem; top: 0.75rem; color: var(--text-muted);"></i>
+                        <input type="text" placeholder="Search departments..." style="width: 100%; padding: 0.625rem 0.625rem 0.625rem 2.5rem; border-radius: 0.5rem; border: 1px solid #e2e8f0;" onkeyup="searchDepartments(this.value)">
                     </div>
                 </div>
                 
                 <div class="table-wrapper">
+                    <div class="table-responsive">
                     <table class="modern-table" id="deptsTable">
                         <thead>
                             <tr>
@@ -527,7 +529,7 @@ async function loadManageDepartments() {
                 `;
             });
 
-            html += `</tbody></table></div>`;
+            html += `</tbody></table></div></div>`;
             document.getElementById('moduleContent').innerHTML = html;
         } else {
             document.getElementById('moduleContent').innerHTML = `<div class="card"><p>${data.message || 'Error loading departments'}</p></div>`;
@@ -648,22 +650,23 @@ async function loadSystemReports() {
         if (data.success) {
             const report = data.report;
             let html = `
-                <div style="margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center;">
+                <div class="mb-8" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                     <div>
-                        <h2 style="font-size: 32px; font-weight: 700;">System Audit Report</h2>
-                        <p style="color: var(--text-muted);">Reporting Period: ${app.formatDate(report.period.from)} — ${app.formatDate(report.period.to)}</p>
+                        <h2 class="login-title" style="font-size: 2rem;">System Audit Report</h2>
+                        <p style="color: var(--text-muted); font-size: 0.875rem;">Period: ${app.formatDate(report.period.from)} — ${app.formatDate(report.period.to)}</p>
                     </div>
-                    <button onclick="exportReport()" class="btn-modern btn-modern-primary" style="display: flex; align-items: center; gap: 8px;">
+                    <button onclick="exportReport()" class="btn-modern btn-modern-primary" style="width: auto;">
                         <i class="ph ph-download-simple"></i> Export CSV
                     </button>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 2fr 1.2fr; gap: 24px; margin-bottom: 24px;">
-                    <div class="glass-panel" style="background: white; padding: 24px; border: none;">
-                        <h3 style="font-size: 18px; margin-bottom: 20px;">User Distribution</h3>
+                <div class="stats-grid mb-8" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                    <div class="glass-panel" style="background: white; border: none;">
+                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1.25rem;">User Distribution</h3>
                         <div class="table-wrapper">
+                            <div class="table-responsive">
                             <table class="modern-table">
-                                <thead><tr><th>Role</th><th>Total Population</th><th>Active Status</th></tr></thead>
+                                <thead><tr><th>Role</th><th>Total</th><th>Active</th></tr></thead>
                                 <tbody>
             `;
 
@@ -674,12 +677,13 @@ async function loadSystemReports() {
             html += `
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     </div>
                     
-                    <div>
-                        <h3 style="font-size: 18px; margin-bottom: 20px;">Outpass Summary</h3>
-                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.25rem;">Outpass Summary</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem;">
                             <div class="modern-card" style="padding: 16px;">
                                 <div class="stat-value" style="font-size: 24px;">${report.outpasses.total || 0}</div>
                                 <div class="stat-label">Total Applications</div>

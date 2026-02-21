@@ -8,9 +8,9 @@ async function loadHODDashboard() {
         if (data.success) {
             const stats = data.statistics;
             document.getElementById('moduleContent').innerHTML = `
-                <div style="margin-bottom: 32px; animation: fadeIn 0.4s ease-out;">
-                    <h2 style="font-size: 36px; font-weight: 700; color: var(--text-main); letter-spacing: -0.02em;">HOD Command Center</h2>
-                    <p style="color: var(--text-muted);">Monitor and manage departmental outpass operations from one central panel.</p>
+                <div class="mb-8" style="animation: fadeIn 0.4s ease-out;">
+                    <h2 class="login-title" style="font-size: 2.25rem;">HOD Command Center</h2>
+                    <p style="color: var(--text-muted); font-size: 1rem;">Monitor and manage departmental outpass operations from one central panel.</p>
                 </div>
                 
                 <div class="stats-grid">
@@ -37,23 +37,23 @@ async function loadHODDashboard() {
                     </div>
                 </div>
                 
-                <div class="glass-panel" style="background: white; padding: 40px; border: none; box-shadow: var(--shadow-lg); display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
+                <div class="glass-panel" style="background: white; border: none; display: flex; flex-direction: column; gap: 2.5rem; align-items: flex-start; max-width: 100%;">
                     <div>
-                        <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 16px; color: var(--text-main);">Quick Operations</h3>
-                        <p style="color: var(--text-muted); margin-bottom: 32px; line-height: 1.6;">Access critical reports, audit student history, and approve pending requests with streamlined workflows.</p>
-                        <div style="display: flex; gap: 16px;">
-                            <button onclick="loadModule('hod-approvals')" class="btn-modern btn-modern-primary" style="padding: 14px 28px;">
+                        <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main);">Quick Operations</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 2rem; line-height: 1.6;">Access critical reports, audit student history, and approve pending requests with streamlined workflows.</p>
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <button onclick="loadModule('hod-approvals')" class="btn-modern btn-modern-primary" style="width: auto;">
                                 <i class="ph ph-shield-check"></i> Manage Approvals
                             </button>
-                            <button onclick="loadModule('dept-statistics')" class="btn-modern" style="background: #f1f5f9; color: var(--text-main); padding: 14px 28px;">
+                            <button onclick="loadModule('dept-statistics')" class="btn-modern" style="background: #f1f5f9; color: var(--text-main); width: auto;">
                                 <i class="ph ph-presentation"></i> Detailed Reports
                             </button>
                         </div>
                     </div>
-                    <div style="background: #f8fafc; border-radius: 20px; padding: 32px; border: 1px solid #f1f5f9; text-align: center;">
-                        <i class="ph ph-chart-donut" style="font-size: 80px; color: var(--primary); opacity: 0.8; margin-bottom: 16px;"></i>
+                    <div style="width: 100%; background: #f8fafc; border-radius: 1.25rem; padding: 2rem; border: 1px solid #f1f5f9; text-align: center;">
+                        <i class="ph ph-chart-donut" style="font-size: 5rem; color: var(--primary); opacity: 0.8; margin-bottom: 1rem;"></i>
                         <h4 style="font-weight: 700;">Insight Generator</h4>
-                        <p style="font-size: 13px; color: var(--text-muted);">Data visualization for the current academic semester is active.</p>
+                        <p style="font-size: 0.8125rem; color: var(--text-muted);">Data visualization for the current academic semester is active.</p>
                     </div>
                 </div>
             `;
@@ -72,12 +72,12 @@ async function loadHODApprovals() {
 
         if (data.success) {
             let html = `
-                <div style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; animation: fadeIn 0.4s ease-out;">
+                <div class="mb-8" style="display: flex; justify-content: space-between; align-items: flex-end; animation: fadeIn 0.4s ease-out; flex-wrap: wrap; gap: 1rem;">
                     <div>
-                        <h2 style="font-size: 32px; font-weight: 700; letter-spacing: -0.02em;">Final Decision Queue</h2>
-                        <p style="color: var(--text-muted);">Review and finalize outpass requests for your department.</p>
+                        <h2 class="login-title" style="font-size: 2rem;">Final Decision Queue</h2>
+                        <p style="color: var(--text-muted); font-size: 1rem;">Review and finalize outpass requests for your department.</p>
                     </div>
-                    <button onclick="loadModule('hod-dashboard')" class="btn-modern" style="background: #f1f5f9; color: var(--text-main);"><i class="ph ph-caret-left"></i> Back to Deck</button>
+                    <button onclick="loadModule('hod-dashboard')" class="btn-modern" style="width: auto; background: #f1f5f9; color: var(--text-main);"><i class="ph ph-caret-left"></i> Back to Deck</button>
                 </div>
                 
                 <div class="table-wrapper" style="box-shadow: var(--shadow-lg);">
@@ -141,7 +141,7 @@ async function loadHODApprovals() {
                 });
             }
 
-            html += `</tbody></table></div>`;
+            html += `</tbody></table></div></div>`;
             document.getElementById('moduleContent').innerHTML = html;
         } else {
             document.getElementById('moduleContent').innerHTML = `<div class="glass-panel"><p style="color: var(--error);">${data.message || 'Error loading pending approvals'}</p></div>`;
@@ -159,7 +159,7 @@ async function reviewHODRequest(outpassId) {
 
         if (op) {
             document.getElementById('moduleContent').innerHTML = `
-                <div class="glass-panel" style="max-width: 850px; margin: 0 auto; padding: 48px; border: none; box-shadow: var(--shadow-lg);">
+                <div class="glass-panel" style="max-width: 850px; margin: 0 auto; border: none;">
                     <div style="display: flex; gap: 40px; align-items: start; margin-bottom: 40px; border-bottom: 1px solid #f1f5f9; padding-bottom: 32px;">
                         <div style="width: 160px; height: 160px; border-radius: 24px; background: #f8fafc; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 3px solid #f1f5f9; box-shadow: var(--shadow-md);">
                             ${op.profile_image ? `<img src="${op.profile_image}" style="width: 100%; height: 100%; object-fit: cover;">` : '<i class="ph ph-user-circle" style="font-size: 80px; color: #cbd5e1;"></i>'}
@@ -190,22 +190,22 @@ async function reviewHODRequest(outpassId) {
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; margin-bottom: 40px;">
-                        <div style="background: #f8fafc; padding: 28px; border-radius: 20px; border: 1px solid #f1f5f9;">
-                            <h4 style="margin-bottom: 16px; color: var(--primary); font-size: 15px; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 8px;">
+                    <div style="display: flex; flex-direction: column; gap: 2rem; margin-bottom: 2.5rem;">
+                        <div style="background: #f8fafc; padding: 1.75rem; border-radius: 1.25rem; border: 1px solid #f1f5f9;">
+                            <h4 style="margin-bottom: 1rem; color: var(--primary); font-size: 0.9375rem; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 0.5rem;">
                                 <i class="ph ph-warning-circle"></i> Declared Reason
                             </h4>
-                            <p style="line-height: 1.8; color: var(--text-main); font-weight: 500;">${op.reason}</p>
+                            <p style="line-height: 1.8; color: var(--text-main); font-weight: 500; font-size: 0.9375rem;">${op.reason}</p>
                         </div>
-                        <div style="background: rgba(16, 185, 129, 0.04); padding: 28px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.1);">
-                            <h4 style="margin-bottom: 12px; font-size: 15px; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 8px;">
+                        <div style="background: rgba(16, 185, 129, 0.04); padding: 1.75rem; border-radius: 1.25rem; border: 1px solid rgba(16, 185, 129, 0.1);">
+                            <h4 style="margin-bottom: 0.75rem; font-size: 0.9375rem; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 0.5rem;">
                                 <i class="ph ph-seal-check" style="color: var(--success);"></i> Advisor Insight
                             </h4>
-                            <div style="font-weight: 700; color: var(--success); font-size: 14px; margin-bottom: 8px;">Authorized Recommendation</div>
-                            <p style="font-size: 14px; color: #374151; font-style: italic; background: white; padding: 12px; border-radius: 12px; margin-bottom: 12px; border: 1px dashed #d1fae5;">
+                            <div style="font-weight: 700; color: var(--success); font-size: 0.875rem; margin-bottom: 0.5rem;">Authorized Recommendation</div>
+                            <p style="font-size: 0.875rem; color: #374151; font-style: italic; background: white; padding: 0.75rem; border-radius: 0.75rem; margin-bottom: 0.75rem; border: 1px dashed #d1fae5;">
                                 "${op.advisor_remarks || 'The request aligns with institutional protocols.'}"
                             </p>
-                            <div style="font-size: 11px; color: var(--text-muted); font-weight: 600;">Digitally Signed at ${app.formatDateTime(op.advisor_action_time)}</div>
+                            <div style="font-size: 0.6875rem; color: var(--text-muted); font-weight: 600;">Digitally Signed at ${app.formatDateTime(op.advisor_action_time)}</div>
                         </div>
                     </div>
 
@@ -214,12 +214,12 @@ async function reviewHODRequest(outpassId) {
                         <textarea id="hodRemarks" rows="3" placeholder="Add optional remarks for the student..." style="border-radius: 16px; padding: 16px; background: #f8fafc; border-color: #e2e8f0; font-family: inherit; font-size: 15px;"></textarea>
                     </div>
 
-                    <div style="display: flex; gap: 20px;">
-                        <button onclick="approveHODFinal(${op.outpass_id})" class="btn-modern btn-modern-primary" style="flex: 2; padding: 20px; font-size: 16px; border-radius: 18px;">
-                            <i class="ph ph-check-circle" style="font-size: 22px;"></i> Approve & Generate QR
+                    <div style="display: flex; gap: 1.25rem; flex-wrap: wrap;">
+                        <button onclick="approveHODFinal(${op.outpass_id})" class="btn-modern btn-modern-primary" style="flex: 2; min-width: 250px;">
+                            <i class="ph ph-check-circle" style="font-size: 1.375rem;"></i> Approve & Generate QR
                         </button>
-                        <button onclick="rejectHODFinal(${op.outpass_id})" class="btn-modern" style="flex: 1; background: #fee2e2; color: #991b1b; border-radius: 18px;">Reject</button>
-                        <button onclick="loadModule('hod-approvals')" class="btn-modern" style="flex: 0.8; background: #f1f5f9; color: var(--text-muted); border-radius: 18px;">Cancel</button>
+                        <button onclick="rejectHODFinal(${op.outpass_id})" class="btn-modern" style="flex: 1; background: #fee2e2; color: #991b1b; min-width: 120px;">Reject</button>
+                        <button onclick="loadModule('hod-approvals')" class="btn-modern" style="flex: 0.8; background: #f1f5f9; color: var(--text-muted); min-width: 100px;">Cancel</button>
                     </div>
                 </div>
             `;
@@ -358,7 +358,8 @@ async function loadAllOutpasses() {
                     </div>
                 </div>
                 
-                <div class="table-wrapper" style="box-shadow: var(--shadow-lg);">
+                <div class="table-wrapper">
+                    <div class="table-responsive">
                     <table class="modern-table">
                         <thead>
                             <tr>
@@ -417,7 +418,7 @@ async function loadAllOutpasses() {
                 });
             }
 
-            html += `</tbody></table></div>`;
+            html += `</tbody></table></div></div>`;
             document.getElementById('moduleContent').innerHTML = html;
         } else {
             document.getElementById('moduleContent').innerHTML = `<div class="glass-panel"><p style="color: var(--error);">${data.message || 'Error loading records'}</p></div>`;

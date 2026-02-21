@@ -137,6 +137,15 @@ document.addEventListener('DOMContentLoaded', function () {
         item.addEventListener('click', handleNavigation);
     });
 
+    // Mobile menu toggle
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const sidebarNav = document.getElementById('sidebarNav');
+    if (mobileMenuToggle && sidebarNav) {
+        mobileMenuToggle.addEventListener('click', () => {
+            sidebarNav.classList.toggle('show');
+        });
+    }
+
     // Modal close
     const modal = document.getElementById('qrModal');
     const closeBtn = modal.querySelector('.close');
@@ -144,6 +153,13 @@ document.addEventListener('DOMContentLoaded', function () {
     window.onclick = (e) => {
         if (e.target == modal) modal.classList.remove('show');
     };
+
+    // Close mobile menu when nav link clicked
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.nav-link') && window.innerWidth < 1024) {
+            sidebarNav.classList.remove('show');
+        }
+    });
 });
 
 // Check if user session exists
@@ -339,34 +355,33 @@ async function loadDepartments() {
 
 // Show dashboard based on user role
 function showDashboard() {
-    hidePage('loginPage');
-    hidePage('registerPage');
-    showPage('dashboardPage');
+    // Show appropriate menu
+    const studentMenu = document.getElementById('studentMenu');
+    const staffMenu = document.getElementById('staffMenu');
+    const hodMenu = document.getElementById('hodMenu');
+    const securityMenu = document.getElementById('securityMenu');
+    const adminMenu = document.getElementById('adminMenu');
 
-    // Update header
-    document.getElementById('userName').textContent = currentUser.full_name;
-    document.getElementById('userRole').textContent = currentUser.role;
+    if (studentMenu) studentMenu.style.display = currentUser.role === 'student' ? 'block' : 'none';
+    if (staffMenu) staffMenu.style.display = currentUser.role === 'staff' ? 'block' : 'none';
+    if (hodMenu) hodMenu.style.display = currentUser.role === 'hod' ? 'block' : 'none';
+    if (securityMenu) securityMenu.style.display = currentUser.role === 'security' ? 'block' : 'none';
+    if (adminMenu) adminMenu.style.display = currentUser.role === 'admin' ? 'block' : 'none';
 
-    // Show profile image/avatar in sidebar
-    const sidebarLogo = document.querySelector('.modern-sidebar div[style*="background: var(--primary-gradient)"]');
-    if (sidebarLogo) {
+    // Update avatar
+    const userAvatar = document.getElementById('userAvatar');
+    if (userAvatar) {
         if (currentUser.profile_image) {
-            sidebarLogo.style.background = `url(${currentUser.profile_image})`;
-            sidebarLogo.style.backgroundSize = 'cover';
-            sidebarLogo.style.backgroundPosition = 'center';
-            sidebarLogo.textContent = '';
+            userAvatar.style.backgroundImage = `url(${currentUser.profile_image})`;
+            userAvatar.style.backgroundSize = 'cover';
+            userAvatar.style.backgroundPosition = 'center';
+            userAvatar.textContent = '';
         } else {
-            sidebarLogo.style.background = 'var(--primary-gradient)';
-            sidebarLogo.textContent = '👤';
+            userAvatar.style.backgroundImage = 'none';
+            userAvatar.style.background = '#e2e8f0';
+            userAvatar.textContent = '👤';
         }
     }
-
-    // Show appropriate menu
-    document.getElementById('studentMenu').style.display = currentUser.role === 'student' ? 'block' : 'none';
-    document.getElementById('staffMenu').style.display = currentUser.role === 'staff' ? 'block' : 'none';
-    document.getElementById('hodMenu').style.display = currentUser.role === 'hod' ? 'block' : 'none';
-    document.getElementById('securityMenu').style.display = currentUser.role === 'security' ? 'block' : 'none';
-    document.getElementById('adminMenu').style.display = currentUser.role === 'admin' ? 'block' : 'none';
 
     // Load default module
     const defaultModule = `${currentUser.role}-dashboard`;
@@ -550,16 +565,18 @@ function showQRModal(qrCode, qrBase64) {
     const display = document.getElementById('qrCodeDisplay');
 
     display.innerHTML = `
-        <div id="printableOutpass">
-            <img src="${qrBase64}" alt="QR Code" style="width: 250px; height: 250px; margin-bottom: 16px;">
-            <div style="text-align: center;">
-                <p style="font-size: 18px; font-weight: 800; color: var(--primary); margin-bottom: 4px;">DIGITAL OUTPASS</p>
-                <code style="font-size: 14px; background: #f1f5f9; padding: 4px 12px; border-radius: 6px;">${qrCode}</code>
-                <p style="font-size: 11px; color: #64748b; margin-top: 12px;">Authorized by Institutional Security Systems</p>
+        <div id="printableOutpass" class="text-center">
+            <div class="qr-container">
+                <img src="${qrBase64}" alt="QR Code">
+            </div>
+            <div class="mb-8">
+                <p style="font-size: 1.125rem; font-weight: 800; color: var(--primary); margin-bottom: 0.25rem;">DIGITAL OUTPASS</p>
+                <code style="font-size: 0.875rem; background: #f1f5f9; padding: 0.25rem 0.75rem; border-radius: 0.375rem;">${qrCode}</code>
+                <p style="font-size: 0.7rem; color: #64748b; margin-top: 0.75rem;">Authorized by Institutional Security Systems</p>
             </div>
         </div>
-        <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: center;" class="no-print">
-            <button onclick="printQR()" class="btn-modern btn-modern-primary" style="padding: 10px 24px; font-size: 14px; border-radius: 30px;">
+        <div style="display: flex; gap: 0.75rem; justify-content: center;" class="no-print">
+            <button onclick="printQR()" class="btn-modern btn-modern-primary" style="width: auto; border-radius: 2rem;">
                 <i class="ph ph-printer"></i> Print Outpass
             </button>
         </div>

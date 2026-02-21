@@ -29,7 +29,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
 DB_CONFIG = {
     'host': os.environ.get('DB_HOST', 'localhost'),
     'user': os.environ.get('DB_USER', 'root'),
-    'password': os.environ.get('DB_PASSWORD', 'NewPassword@123'), 
+    'password': os.environ.get('DB_PASSWORD'), 
     'database': os.environ.get('DB_NAME', 'outpass_db'),
 }
 

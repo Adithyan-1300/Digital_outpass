@@ -8,9 +8,9 @@ async function loadSecurityDashboard() {
         if (data.success) {
             const stats = data.stats;
             document.getElementById('moduleContent').innerHTML = `
-                <div style="margin-bottom: 32px;">
-                    <h2 style="font-size: 32px; font-weight: 700;">Security Command</h2>
-                    <p style="color: var(--text-muted);">Real-time monitoring and gate control.</p>
+                <div class="mb-8" style="animation: fadeIn 0.4s ease-out;">
+                    <h2 class="login-title" style="font-size: 2.25rem;">Security Command</h2>
+                    <p style="color: var(--text-muted); font-size: 1rem;">Real-time monitoring and gate control.</p>
                 </div>
                 
                 <div class="stats-grid">
@@ -37,15 +37,15 @@ async function loadSecurityDashboard() {
                     </div>
                 </div>
                 
-                <div class="glass-panel" style="background: white; padding: 32px; border: none;">
-                    <div style="margin-bottom: 24px;">
-                        <h3 style="font-size: 20px; font-weight: 600;">Gate Controls</h3>
+                <div class="glass-panel" style="background: white; border: none;">
+                    <div class="mb-4">
+                        <h3 style="font-size: 1.25rem; font-weight: 600;">Gate Controls</h3>
                     </div>
-                    <div style="display: flex; gap: 16px;">
-                        <button onclick="loadModule('scan-qr')" class="btn-modern btn-modern-primary" style="display: flex; align-items: center; gap: 12px; padding: 16px 32px; font-size: 16px;">
-                            <i class="ph ph-qr-code" style="font-size: 24px;"></i> Scan Pass
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button onclick="loadModule('scan-qr')" class="btn-modern btn-modern-primary" style="width: auto; padding: 1rem 2rem;">
+                            <i class="ph ph-qr-code" style="font-size: 1.5rem;"></i> Scan Pass
                         </button>
-                        <button onclick="loadModule('students-out')" class="btn-modern" style="background: #f1f5f9; color: var(--text-main); display: flex; align-items: center; gap: 12px; padding: 16px 32px;">
+                        <button onclick="loadModule('students-out')" class="btn-modern" style="background: #f1f5f9; color: var(--text-main); width: auto; padding: 1rem 2rem;">
                             <i class="ph ph-users-four"></i> Track Outs
                         </button>
                     </div>
@@ -61,40 +61,40 @@ async function loadSecurityDashboard() {
 
 async function loadScanQR() {
     document.getElementById('moduleContent').innerHTML = `
-        <div class="glass-panel" style="background: white; padding: 40px; border: none; max-width: 600px; margin: 0 auto; text-align: center;">
-            <div style="margin-bottom: 32px;">
-                <h2 style="font-size: 28px; margin-bottom: 8px;">Scan Outpass</h2>
-                <p style="color: var(--text-muted);">Point camera at QR or enter code manually.</p>
+        <div class="glass-panel" style="background: white; border: none; max-width: 600px; margin: 0 auto; text-align: center;">
+            <div class="mb-8">
+                <h2 class="login-title" style="font-size: 1.75rem; margin-bottom: 0.5rem;">Scan Outpass</h2>
+                <p style="color: var(--text-muted); font-size: 1rem;">Point camera at QR or enter code manually.</p>
             </div>
             
-            <div style="max-width: 600px; margin: 0 auto;">
+            <div style="max-width: 100%;">
                 <!-- Camera Scanner -->
-                <div id="scannerSection" style="margin-bottom: 32px;">
-                    <div style="display: flex; justify-content: center; gap: 12px; margin-bottom: 20px;">
-                        <button onclick="startScanner()" class="btn-modern btn-modern-primary" id="startScanBtn" style="display: flex; align-items: center; gap: 8px;">
+                <div id="scannerSection" class="mb-8">
+                    <div style="display: flex; justify-content: center; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap;">
+                        <button onclick="startScanner()" class="btn-modern btn-modern-primary" id="startScanBtn" style="width: auto;">
                             <i class="ph ph-camera"></i> Activate Camera
                         </button>
-                        <button onclick="stopScanner()" class="btn-modern" id="stopScanBtn" style="display: none; background: #fee2e2; color: var(--danger);">
+                        <button onclick="stopScanner()" class="btn-modern" id="stopScanBtn" style="display: none; background: #fee2e2; color: var(--danger); width: auto;">
                             <i class="ph ph-stop"></i> Stop Scanner
                         </button>
                     </div>
-                    <div id="qr-reader" style="width: 100%; display: none; border-radius: 12px; overflow: hidden; border: 2px solid var(--primary);"></div>
+                    <div id="qr-reader" style="width: 100%; display: none; border-radius: 0.75rem; overflow: hidden; border: 2px solid var(--primary);"></div>
                 </div>
                 
                 <!-- Manual Entry Option -->
-                <div style="padding-top: 32px; border-top: 1px solid #f1f5f9;">
-                    <h3 style="font-size: 16px; margin-bottom: 16px; color: var(--text-muted);">Manual Verification</h3>
+                <div style="padding-top: 2rem; border-top: 1px solid #f1f5f9;">
+                    <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-muted);">Manual Verification</h3>
                     <div class="form-group" style="text-align: left;">
                         <input type="text" id="qrInput" class="form-control" 
-                               placeholder="Paste or type QR token here..." style="font-family: monospace; text-align: center; font-size: 16px; letter-spacing: 1px;">
+                               placeholder="Paste or type QR token here..." style="font-family: monospace; text-align: center; font-size: 1rem; letter-spacing: 0.05rem;">
                     </div>
                     
-                    <button onclick="verifyQRCode()" class="btn-modern btn-modern-primary" style="width: 100%; margin-top: 16px; padding: 16px;">
+                    <button onclick="verifyQRCode()" class="btn-modern btn-modern-primary" style="width: 100%; margin-top: 1rem;">
                         Verify Outpass
                     </button>
                 </div>
                 
-                <div id="qrResult" style="margin-top: 32px;"></div>
+                <div id="qrResult" style="margin-top: 2rem;"></div>
             </div>
         </div>
     `;
@@ -294,12 +294,12 @@ async function loadStudentsOut() {
 
         if (data.success) {
             let html = `
-                <div style="margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center;">
+                <div class="mb-8" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                     <div>
-                        <h2 style="font-size: 28px; font-weight: 700;">Students Currently Out</h2>
-                        <p style="color: var(--text-muted);">${data.count} students outside campus.</p>
+                        <h2 class="login-title" style="font-size: 1.75rem;">Students Currently Out</h2>
+                        <p style="color: var(--text-muted); font-size: 0.875rem;">${data.count} students outside campus.</p>
                     </div>
-                    <button onclick="loadModule('security-dashboard')" class="btn-modern" style="background: #f1f5f9; color: var(--text-main);"><i class="ph ph-arrow-left"></i> Back</button>
+                    <button onclick="loadModule('security-dashboard')" class="btn-modern" style="width: auto; background: #f1f5f9; color: var(--text-main);"><i class="ph ph-arrow-left"></i> Back</button>
                 </div>
                 
                 <div class="table-wrapper">
@@ -342,7 +342,7 @@ async function loadStudentsOut() {
                 });
             }
 
-            html += `</tbody></table></div>`;
+            html += `</tbody></table></div></div>`;
             document.getElementById('moduleContent').innerHTML = html;
         } else {
             document.getElementById('moduleContent').innerHTML = `<div class="card"><p>${data.message || 'Error loading list'}</p></div>`;
@@ -380,9 +380,9 @@ async function loadRecentActivity() {
 
         if (data.success) {
             let html = `
-                <div style="margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center;">
-                    <h2 style="font-size: 28px; font-weight: 700;">Recent Activity</h2>
-                    <button onclick="loadModule('security-dashboard')" class="btn-modern" style="background: #f1f5f9; color: var(--text-main);"><i class="ph ph-arrow-left"></i> Dashboard</button>
+                <div class="mb-8" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <h2 class="login-title" style="font-size: 1.75rem;">Recent Activity</h2>
+                    <button onclick="loadModule('security-dashboard')" class="btn-modern" style="width: auto; background: #f1f5f9; color: var(--text-main);"><i class="ph ph-arrow-left"></i> Dashboard</button>
                 </div>
                 
                 <div class="table-wrapper">
@@ -427,7 +427,7 @@ async function loadRecentActivity() {
                 });
             }
 
-            html += `</tbody></table></div>`;
+            html += `</tbody></table></div></div>`;
             document.getElementById('moduleContent').innerHTML = html;
         } else {
             document.getElementById('moduleContent').innerHTML = `<div class="card"><p>${data.message || 'Error loading activity'}</p></div>`;
