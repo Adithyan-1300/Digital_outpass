@@ -27,10 +27,11 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
 # DATABASE CONFIGURATION
 # Update 'password' to your actual MySQL root password 
 DB_CONFIG = {
-    'host': os.environ.get('DB_HOST', 'localhost'),
-    'user': os.environ.get('DB_USER', 'root'),
-    'password': os.environ.get('DB_PASSWORD'), 
-    'database': os.environ.get('DB_NAME', 'outpass_db'),
+    "host": os.environ.get("DB_HOST"),
+    "user": os.environ.get("DB_USER"),
+    "password": os.environ.get("DB_PASSWORD"),
+    "database": os.environ.get("DB_NAME"),
+    "port": int(os.environ.get("DB_PORT", 3306))  # <-- convert to int
 }
 
 # Ensure the database exists; create if missing
