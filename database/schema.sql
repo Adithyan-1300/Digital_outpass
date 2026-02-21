@@ -27,13 +27,12 @@ CREATE TABLE users (
     dept_id INT,
     registration_no VARCHAR(50) UNIQUE,
     phone VARCHAR(15),
-    -- These two lines were missing and causing your error:
     parent_name VARCHAR(100),
     parent_mobile VARCHAR(15),
     advisor_id INT,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (dept_id) REFERENCsES departments(dept_id),
+    FOREIGN KEY (dept_id) REFERENCES departments(dept_id),
     FOREIGN KEY (advisor_id) REFERENCES users(user_id)
 );
 
@@ -103,4 +102,5 @@ CREATE INDEX idx_outpasses_hod ON outpasses(hod_id);
 CREATE INDEX idx_outpasses_status ON outpasses(final_status);
 CREATE INDEX idx_outpasses_date ON outpasses(out_date);
 CREATE INDEX idx_users_role ON users(role);
+
 CREATE INDEX idx_users_dept ON users(dept_id);
