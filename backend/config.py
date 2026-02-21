@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
 import mysql.connector
-from mysql.connector import pooling
 from datetime import timedelta
 
 # Load environment variables
@@ -24,35 +23,24 @@ CORS(app)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-123')
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
 
-# DATABASE CONFIGURATION
-# Update 'password' to your actual MySQL root password 
-DB_CONFIG = {
-    "host": os.environ.get("DB_HOST"),
-    "user": os.environ.get("DB_USER"),
-    "password": os.environ.get("DB_PASSWORD"),
-    "database": os.environ.get("DB_NAME"),
-    "port": int(os.environ.get("DB_PORT", 3306))
-}
-connection_pool = None
-try:
-    connection_pool = pooling.MySQLConnectionPool(pool_name="outpass_pool", pool_size=5, **DB_CONFIG)
-    print("[OK] Database connection pool created successfully")
-except Exception as err:
-    print(f"[WARNING] Database not ready: {err}")
+# ================= DATABASE CONNECTION =================
 
 def get_db_connection():
-    """Returns a database connection from the pool or a direct connection."""
     try:
-        if connection_pool:
-            try:
-                return connection_pool.get_connection()
-            except Exception as pool_err:
-                print(f"⚠️  Pool error: {pool_err}. Falling back to direct connection.")
-        
-        return mysql.connector.connect(**DB_CONFIG)
-    except Exception as err:
-        print(f"[ERROR] Database connection error: {err}")
+        return mysql.connector.connect(
+            host=os.environ.get("DB_HOST"),
+            user=os.environ.get("DB_USER"),
+            password=os.environ.get("DB_PASSWORD"),
+            database=os.environ.get("DB_NAME"),
+            port=int(os.environ.get("DB_PORT")),
+            ssl_disabled=False
+        )
+    except Exception as e:
+        print("Actual Error:", e)
         return None
+
+
+# ================= INIT DB FUNCTION =================
 
 def init_db():
     """Initializes schema and sample data."""
