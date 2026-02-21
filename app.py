@@ -21,6 +21,12 @@ app.register_blueprint(hod_bp)
 app.register_blueprint(security_bp)
 app.register_blueprint(admin_bp)
 
+# --- FORCE DATABASE INITIALIZATION ON RENDER ---
+# This runs every time the server starts, ensuring data is there
+with app.app_context():
+    print("Checking database initialization...")
+    init_db() 
+
 # Serve frontend files
 @app.route('/')
 def index():
@@ -52,45 +58,9 @@ def health_check():
     """Health check endpoint"""
     return {'status': 'ok', 'message': 'Smart Outpass System API is running'}, 200
 
-if __name__ == '__main__':
-    # Initialize database on first run
-    print("=" * 60)
-    print("Smart Outpass Management System")
-    print("=" * 60)
-    
-    # Check if database should be initialized
-    # initialize = input("Initialize database with schema and sample data? (yes/no): ").lower()
-    initialize = 'yes'
-    if initialize == 'yes':
-        print("\nInitializing database...")
-        if init_db():
-            print("[OK] Database initialized successfully!")
-        else:
-            print("[ERROR] Database initialization failed. Check MySQL connection.")
-            print("\nPlease ensure:")
-            print("1. MySQL server is running")
-            print("2. Database 'outpass_db' exists (or will be created)")
-            print("3. Correct credentials in backend/config.py")
-    
-    print("\n" + "=" * 60)
-    print("Starting Flask application...")
-    print("=" * 60)
-    print("\nDefault credentials:")
-    print("Admin    - Username: admin       Password: password123")
-    print("HOD CSE  - Username: hod_cse     Password: password123")
-    print("Staff    - Username: staff_cse1  Password: password123")
-    print("Security - Username: security1   Password: password123")
-    print("Student  - Username: student1    Password: password123")
-    print("\n" + "=" * 60)
-    print("\n>>> APPLICATION RUNNING AT:")
-    print("   http://localhost:5000")
-    print("   http://127.0.0.1:5000")
-    print("\n" + "=" * 60 + "\n")
-    
-    # Run application
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
-        port=int(os.environ.get("PORT",10000)),
+        port=int(os.environ.get("PORT", 10000)),
         debug=False
     )
