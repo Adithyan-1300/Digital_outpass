@@ -31,32 +31,10 @@ DB_CONFIG = {
     "user": os.environ.get("DB_USER"),
     "password": os.environ.get("DB_PASSWORD"),
     "database": os.environ.get("DB_NAME"),
-    "port": int(os.environ.get("DB_PORT", 3306))  # <-- convert to int
+    "port": int(os.environ.get("DB_PORT", 3306))
 }
-
-# Ensure the database exists; create if missing
-def ensure_database():
-    """Create the database if it does not exist."""
-    try:
-        # Connect without specifying a database
-        conn = mysql.connector.connect(
-            host=DB_CONFIG['host'],
-            user=DB_CONFIG['user'],
-            password=DB_CONFIG['password']
-        )
-        cursor = conn.cursor()
-        cursor.execute(f"CREATE DATABASE IF NOT EXISTS {DB_CONFIG['database']}")
-        conn.commit()
-        cursor.close()
-        conn.close()
-        print(f"[OK] Ensured database '{DB_CONFIG['database']}' exists")
-    except Exception as e:
-        print(f"[ERROR] Could not ensure database exists: {e}")
-
-# Connection Pool Initialization
 connection_pool = None
 try:
-    ensure_database()
     connection_pool = pooling.MySQLConnectionPool(pool_name="outpass_pool", pool_size=5, **DB_CONFIG)
     print("[OK] Database connection pool created successfully")
 except Exception as err:
