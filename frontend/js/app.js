@@ -361,66 +361,68 @@ async function loadDepartments() {
 
 // Show dashboard based on user role
 function showDashboard() {
-    // Redirect UI: Hide login/register and show dashboard
-    hidePage('loginPage');
-    hidePage('registerPage');
-    showPage('dashboardPage');
+    try {
+        // Redirect UI: Hide login/register and show dashboard
+        hidePage('loginPage');
+        hidePage('registerPage');
+        showPage('dashboardPage');
 
-    // Update Sidebar User Info
-    const userName = document.getElementById('userName');
-    const userRole = document.getElementById('userRole');
-    if (userName) userName.textContent = currentUser.full_name || currentUser.username;
-    if (userRole) userRole.textContent = currentUser.role.toUpperCase();
-
-    // Show appropriate menu
-    const studentMenu = document.getElementById('studentMenu');
-    const staffMenu = document.getElementById('staffMenu');
-    const hodMenu = document.getElementById('hodMenu');
-    const securityMenu = document.getElementById('securityMenu');
-    const adminMenu = document.getElementById('adminMenu');
-
-    if (studentMenu) studentMenu.style.display = currentUser.role === 'student' ? 'block' : 'none';
-    if (staffMenu) staffMenu.style.display = currentUser.role === 'staff' ? 'block' : 'none';
-    if (hodMenu) hodMenu.style.display = currentUser.role === 'hod' ? 'block' : 'none';
-    if (securityMenu) securityMenu.style.display = currentUser.role === 'security' ? 'block' : 'none';
-    if (adminMenu) adminMenu.style.display = currentUser.role === 'admin' ? 'block' : 'none';
-
-    // Update avatar
-    const userAvatar = document.getElementById('userAvatar');
-    if (userAvatar) {
-        if (currentUser.profile_image) {
-            userAvatar.style.backgroundImage = `url(/uploads/${currentUser.profile_image})`;
-            userAvatar.style.backgroundSize = 'cover';
-            userAvatar.style.backgroundPosition = 'center';
-            userAvatar.textContent = '';
-        } else {
-            userAvatar.style.backgroundImage = 'none';
-            userAvatar.style.background = '#e2e8f0';
-            userAvatar.textContent = '👤';
+        if (!currentUser) {
+            console.error('No current user data available for dashboard');
+            showLoginPage();
+            return;
         }
-    }
 
-    // Load default module or restore previous one
-    const savedModule = localStorage.getItem('currentModule');
-    let moduleToLoad = `${currentUser.role}-dashboard`;
+        // Update Sidebar User Info
+        const userName = document.getElementById('userName');
+        const userRole = document.getElementById('userRole');
+        if (userName) userName.textContent = currentUser.full_name || currentUser.username;
+        if (userRole) userRole.textContent = currentUser.role.toUpperCase();
 
-    // Only restore if it belongs to the current role's modules
-    if (savedModule) {
-        const rolePrefix = currentUser.role === 'admin' ? 'admin' :
-            currentUser.role === 'student' ? 'student' :
-                currentUser.role === 'staff' ? 'staff' :
-                    currentUser.role === 'hod' ? 'hod' :
-                        currentUser.role === 'security' ? 'security' : '';
+        // Show appropriate menu
+        const menus = ['studentMenu', 'staffMenu', 'hodMenu', 'securityMenu', 'adminMenu'];
+        menus.forEach(menuId => {
+            const menu = document.getElementById(menuId);
+            if (menu) menu.style.display = 'none';
+        });
 
-        // List of all non-prefixed modules (shared or special)
-        const commonModules = ['apply-outpass', 'my-outpasses', 'my-history', 'pending-requests', 'my-students', 'hod-approvals', 'dept-statistics', 'all-outpasses', 'scan-qr', 'students-out', 'recent-activity', 'manage-users', 'manage-departments', 'system-reports'];
+        const activeMenuId = `${currentUser.role}Menu`;
+        const activeMenu = document.getElementById(activeMenuId);
+        if (activeMenu) activeMenu.style.display = 'block';
 
-        if (savedModule.startsWith(rolePrefix) || commonModules.includes(savedModule)) {
-            moduleToLoad = savedModule;
+        // Update avatar
+        const userAvatar = document.getElementById('userAvatar');
+        if (userAvatar) {
+            if (currentUser.profile_image) {
+                userAvatar.style.backgroundImage = `url(/uploads/${currentUser.profile_image})`;
+                userAvatar.style.backgroundSize = 'cover';
+                userAvatar.style.backgroundPosition = 'center';
+                userAvatar.textContent = '';
+            } else {
+                userAvatar.style.backgroundImage = 'none';
+                userAvatar.style.background = '#e2e8f0';
+                userAvatar.textContent = '👤';
+            }
         }
-    }
 
-    loadModule(moduleToLoad);
+        // Load default module or restore previous one
+        const savedModule = localStorage.getItem('currentModule');
+        let moduleToLoad = `${currentUser.role}-dashboard`;
+
+        if (savedModule) {
+            const rolePrefix = currentUser.role;
+            const commonModules = ['apply-outpass', 'my-outpasses', 'my-history', 'pending-requests', 'my-students', 'hod-approvals', 'dept-statistics', 'all-outpasses', 'scan-qr', 'students-out', 'recent-activity', 'manage-users', 'manage-departments', 'system-reports'];
+
+            if (savedModule.startsWith(rolePrefix) || commonModules.includes(savedModule)) {
+                moduleToLoad = savedModule;
+            }
+        }
+
+        loadModule(moduleToLoad);
+    } catch (error) {
+        console.error('Critical Dashboard Error:', error);
+        showLoginPage();
+    }
 }
 
 // Navigation handler

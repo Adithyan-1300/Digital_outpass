@@ -183,14 +183,12 @@ def send_notification(user_email, subject, message):
     print(f"Message: {message}")
     return True
 
-import os
-from twilio.rest import Client
-
 def send_sms_notification(phone, message):
     """
     Send SMS notification to mobile number using Twilio
     """
     try:
+        from twilio.rest import Client
         account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
         auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
         from_number = os.environ.get('TWILIO_PHONE_NUMBER')
