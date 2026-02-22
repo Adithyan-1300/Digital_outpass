@@ -162,20 +162,44 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+// Hide the loading splash
+function hideSplash() {
+    const splash = document.getElementById('appLoadingSplash');
+    if (splash) {
+        splash.classList.add('hidden');
+        setTimeout(() => { splash.style.display = 'none'; }, 500);
+    }
+}
+
+// Update splash status text
+function setSplashStatus(text) {
+    const el = document.getElementById('splashStatus');
+    if (el) el.textContent = text;
+}
+
 // Check if user session exists
 async function checkSession() {
     try {
-        const response = await fetch(`${API_BASE}/auth/session`);
+        setSplashStatus('Waking up server...');
+        // 15-second timeout handles Render free-tier cold starts
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+        const response = await fetch(`${API_BASE}/auth/session`, { signal: controller.signal });
+        clearTimeout(timeoutId);
         const data = await response.json();
 
         if (data.logged_in) {
             currentUser = data.user;
+            hideSplash();
             showDashboard();
         } else {
+            hideSplash();
             showLoginPage();
         }
     } catch (error) {
         console.error('Session check error:', error);
+        hideSplash();
         showLoginPage();
     }
 }
