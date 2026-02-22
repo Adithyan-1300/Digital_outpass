@@ -478,15 +478,16 @@ h3,
 }
 
 .user-profile-mini {
-    display: none;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--glass-border);
+    width: 100%;
+    margin-top: auto; /* Pushes profile to bottom on desktop */
 }
 
 @media (min-width: 1024px) {
     .user-profile-mini {
         display: block;
         padding-top: 1.5rem;
-        border-top: 1px solid var(--glass-border);
-        width: 100%;
     }
 }
 

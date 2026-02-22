@@ -288,27 +288,28 @@
                             <i class="ph ph-buildings"></i> Departments
                         </a>
                     </div>
-                </nav>
 
-                <div class="user-profile-mini" style="padding-top: 24px; border-top: 1px solid var(--glass-border);">
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-                        <div id="userAvatar"
-                            style="width: 44px; height: 44px; border-radius: 12px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--primary);">
-                            👤</div>
-                        <div>
-                            <div id="userName"
-                                style="font-weight: 700; color: var(--text-main); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;">
-                                User Name</div>
-                            <div id="userRole"
-                                style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.05em;">
-                                Role</div>
+                    <!-- User Profile & Logout - Moved inside sidebarNav for mobile visibility -->
+                    <div class="user-profile-mini">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                            <div id="userAvatar"
+                                style="width: 44px; height: 44px; border-radius: 12px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--primary);">
+                                👤</div>
+                            <div>
+                                <div id="userName"
+                                    style="font-weight: 700; color: var(--text-main); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;">
+                                    User Name</div>
+                                <div id="userRole"
+                                    style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.05em;">
+                                    Role</div>
+                            </div>
                         </div>
+                        <a href="#" id="logoutBtn" class="nav-link"
+                            style="color: var(--error); background: rgba(239, 68, 68, 0.05);">
+                            <i class="ph ph-sign-out"></i> Logout
+                        </a>
                     </div>
-                    <a href="#" id="logoutBtn" class="nav-link"
-                        style="color: var(--error); background: rgba(239, 68, 68, 0.05);">
-                        <i class="ph ph-sign-out"></i> Logout
-                    </a>
-                </div>
+                </nav>
             </aside>
 
             <!-- Main Content Area -->
