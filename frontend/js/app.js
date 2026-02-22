@@ -355,6 +355,17 @@ async function loadDepartments() {
 
 // Show dashboard based on user role
 function showDashboard() {
+    // Redirect UI: Hide login/register and show dashboard
+    hidePage('loginPage');
+    hidePage('registerPage');
+    showPage('dashboardPage');
+
+    // Update Sidebar User Info
+    const userName = document.getElementById('userName');
+    const userRole = document.getElementById('userRole');
+    if (userName) userName.textContent = currentUser.full_name || currentUser.username;
+    if (userRole) userRole.textContent = currentUser.role.toUpperCase();
+
     // Show appropriate menu
     const studentMenu = document.getElementById('studentMenu');
     const staffMenu = document.getElementById('staffMenu');

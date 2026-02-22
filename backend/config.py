@@ -80,7 +80,10 @@ def init_db():
                     try:
                         cursor.execute(statement)
                     except mysql.connector.Error as err:
-                        print(f"[WARN] Schema statement failed (might already exist): {err.msg}")
+                        if err.errno in [1060, 1061]: # Duplicate column/key
+                            pass # Silently ignore duplicates
+                        else:
+                            print(f"[WARN] Schema statement failed: {err.msg}")
             print("[OK] Database schema verified/initialized")
         
         # Execute Sample Data Only if no users exist (to prevent duplicates on every restart)
