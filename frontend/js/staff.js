@@ -136,7 +136,7 @@ async function reviewRequest(outpassId) {
                 <div class="glass-panel" style="max-width: 600px; margin: 0 auto; border: none;">
                     <div style="display: flex; gap: 1.5rem; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; justify-content: center; text-align: center;">
                         <div style="width: 100px; height: 100px; border-radius: 50%; background: #f1f5f9; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid var(--primary); flex-shrink: 0;">
-                            ${op.profile_image ? `<img src="${op.profile_image}" style="width: 100%; height: 100%; object-fit: cover;">` : '<i class="ph ph-user" style="font-size: 2.5rem; color: #cbd5e1;"></i>'}
+                            ${op.profile_image ? `<img src="/uploads/${op.profile_image}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">` : '<i class="ph ph-user" style="font-size: 2.5rem; color: #cbd5e1;"></i>'}
                         </div>
                         <div style="flex: 1; min-width: 250px;">
                             <h2 class="login-title" style="font-size: 1.5rem; margin-bottom: 0.5rem;">Review Request</h2>

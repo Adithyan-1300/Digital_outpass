@@ -67,6 +67,12 @@ def get_pending_approvals():
             req['expected_return_time'] = format_time(req['expected_return_time'])
             req['created_at'] = format_datetime(req['created_at'])
             req['advisor_action_time'] = format_datetime(req['advisor_action_time'])
+            # Normalize profile image to clean relative path
+            if req.get('profile_image'):
+                img = req['profile_image'].replace('uploads/', '', 1).lstrip('/')
+                req['profile_image'] = img
+            else:
+                req['profile_image'] = None
         
         cursor.close()
         conn.close()

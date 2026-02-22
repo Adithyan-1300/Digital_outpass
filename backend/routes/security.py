@@ -130,7 +130,7 @@ def scan_qr():
                 'registration_no': outpass['registration_no'],
                 'department': outpass['dept_name'],
                 'phone': outpass['student_phone'],
-                'profile_image': outpass['profile_image'].replace('uploads/', '', 1) if outpass.get('profile_image') else None
+                'profile_image': outpass['profile_image'].replace('uploads/', '', 1).lstrip('/') if outpass.get('profile_image') else None
             },
             'outpass': {
                 'outpass_id': outpass['outpass_id'],
@@ -210,7 +210,7 @@ def verify_qr():
                 'name': outpass['student_name'],
                 'registration_no': outpass['registration_no'],
                 'department': outpass['dept_name'],
-                'profile_image': outpass['profile_image'].replace('uploads/', '', 1) if outpass.get('profile_image') else None
+                'profile_image': outpass['profile_image'].replace('uploads/', '', 1).lstrip('/') if outpass.get('profile_image') else None
             } if is_valid else None,
             'outpass': {
                 'outpass_id': outpass['outpass_id'],

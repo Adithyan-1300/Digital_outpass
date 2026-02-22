@@ -162,7 +162,7 @@ async function reviewHODRequest(outpassId) {
                 <div class="glass-panel" style="max-width: 850px; margin: 0 auto; border: none;">
                     <div style="display: flex; gap: 40px; align-items: start; margin-bottom: 40px; border-bottom: 1px solid #f1f5f9; padding-bottom: 32px;">
                         <div style="width: 160px; height: 160px; border-radius: 24px; background: #f8fafc; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 3px solid #f1f5f9; box-shadow: var(--shadow-md);">
-                            ${op.profile_image ? `<img src="${op.profile_image}" style="width: 100%; height: 100%; object-fit: cover;">` : '<i class="ph ph-user-circle" style="font-size: 80px; color: #cbd5e1;"></i>'}
+                            ${op.profile_image ? `<img src="/uploads/${op.profile_image}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">` : '<i class="ph ph-user-circle" style="font-size: 80px; color: #cbd5e1;"></i>'}
                         </div>
                         <div style="flex: 1;">
                             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
