@@ -99,6 +99,7 @@ function loadApplyOutpass() {
                         </select>
                         <span style="display: flex; align-items: center; font-weight: bold;">:</span>
                         <input type="number" name="out_minute" min="0" max="59" placeholder="MM" required 
+                            oninput="if(this.value < 0) this.value = 0; if(this.value > 59) this.value = 59;"
                             style="flex: 1; border-radius: 12px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0;">
                         <select name="out_ampm" required style="flex: 1; border-radius: 12px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0; font-weight: 600;">
                             <option value="AM">AM</option>
@@ -116,6 +117,7 @@ function loadApplyOutpass() {
                         </select>
                         <span style="display: flex; align-items: center; font-weight: bold;">:</span>
                         <input type="number" name="return_minute" min="0" max="59" placeholder="MM" required 
+                            oninput="if(this.value < 0) this.value = 0; if(this.value > 59) this.value = 59;"
                             style="flex: 1; border-radius: 12px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0;">
                         <select name="return_ampm" required style="flex: 1; border-radius: 12px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0; font-weight: 600;">
                             <option value="AM">AM</option>
@@ -159,6 +161,14 @@ async function handleApplyOutpass(e) {
     formData.forEach((value, key) => {
         data[key] = value;
     });
+
+    const outMin = parseInt(data.out_minute, 10);
+    const returnMin = parseInt(data.return_minute, 10);
+
+    if (outMin < 0 || outMin > 59 || returnMin < 0 || returnMin > 59) {
+        showError(document.getElementById('applyError'), 'Minutes must be between 00 and 59');
+        return;
+    }
 
     // Parse 12-hour to 24-hour for Departure Time
     let outHour = parseInt(data.out_hour, 10);
