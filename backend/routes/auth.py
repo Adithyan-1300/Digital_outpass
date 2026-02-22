@@ -178,7 +178,7 @@ def register():
         # Handle Security-specific defaults (Email is NOT NULL in DB)
         email = data.get('email', '').strip()
         if role == 'security' and not email:
-            email = f"security_{data['username']}@portal.local"
+            email = f"security_{data['username']}@vetias.ac.in"
             
         # Validate email format (except for our generated placeholder if needed)
         if '@' not in email or '.' not in email:

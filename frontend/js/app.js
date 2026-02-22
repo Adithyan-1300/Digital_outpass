@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // Close mobile menu when nav link clicked
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (e.target.closest('.nav-link') && window.innerWidth < 1024) {
             sidebarNav.classList.remove('show');
         }
@@ -295,6 +295,11 @@ async function handleRegister(e) {
 
     if (password !== confirmPassword) {
         showError(errorEl, 'Passwords do not match');
+        return;
+    }
+
+    if (password.length > 8) {
+        showError(errorEl, 'Password must be at most 8 characters');
         return;
     }
 
