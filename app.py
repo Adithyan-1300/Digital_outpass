@@ -21,9 +21,17 @@ app.register_blueprint(hod_bp)
 app.register_blueprint(security_bp)
 app.register_blueprint(admin_bp)
 
-with app.app_context():
-    print("Checking database initialization (Ensuring schema exists)...")
-    init_db() 
+# Database initialization flag
+_db_initialized = False
+
+@app.before_request
+def check_db_init():
+    """Lazily initialize database on first request to prevent startup delay/hang"""
+    global _db_initialized
+    if not _db_initialized:
+        print("Lazy-checking database initialization...")
+        init_db()
+        _db_initialized = True
 
 # Serve frontend files
 @app.route('/')
