@@ -183,6 +183,16 @@ def send_notification(user_email, subject, message):
     print(f"Message: {message}")
     return True
 
+def send_sms_notification(phone, message):
+    """
+    Send SMS notification to mobile number
+    This is a placeholder - simulate SMS gateway
+    """
+    # TODO: Integrate with SMS API like Twilio, MessageBird, etc.
+    print(f"📱 Simulated SMS to {phone}")
+    print(f"Message: {message}")
+    return True
+
 def is_qr_valid(qr_code, qr_expires_at, is_qr_used):
     """
     Check if QR code is valid for scanning

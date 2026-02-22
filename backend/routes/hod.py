@@ -7,7 +7,8 @@ from flask import Blueprint, request, jsonify, session
 from backend.config import get_db_connection
 from backend.utils.helpers import (
     role_required, format_datetime, format_date, format_time,
-    log_action, get_client_ip, generate_unique_qr_token, generate_qr_code
+    log_action, get_client_ip, generate_unique_qr_token, generate_qr_code,
+    send_sms_notification
 )
 from datetime import datetime, timedelta
 
@@ -96,14 +97,14 @@ def approve_final(outpass_id):
         
         cursor = conn.cursor(dictionary=True)
         
-        # Verify this HOD owns this request
+        # Fetch student and parent details for notification
         cursor.execute("""
-            SELECT o.* 
+            SELECT o.*, s.full_name as student_name, s.parent_mobile, d.dept_name
             FROM outpasses o
             JOIN users s ON o.student_id = s.user_id
+            LEFT JOIN departments d ON s.dept_id = d.dept_id
             WHERE o.outpass_id = %s AND o.hod_id = %s
         """, (outpass_id, session['user_id']))
-        
         outpass = cursor.fetchone()
         
         if not outpass:
@@ -143,6 +144,15 @@ def approve_final(outpass_id):
         # Log action
         log_action(conn, outpass_id, session['user_id'], 'hod_approved', 
                   remarks, get_client_ip())
+        
+        # Send notification to parent
+        if outpass['parent_mobile']:
+            message = (
+                f"Dear Parent, your ward {outpass['student_name']}'s outpass "
+                f"({outpass['dept_name']}) has been approved. "
+                f"Departure: {outpass['out_date']} {format_time(outpass['out_time'])}."
+            )
+            send_sms_notification(outpass['parent_mobile'], message)
         
         cursor.close()
         conn.close()
@@ -342,12 +352,13 @@ def override_approval(outpass_id):
         
         cursor = conn.cursor(dictionary=True)
         
-        # Verify outpass belongs to HOD's department
+        # Verify outpass belongs to HOD's department and fetch details
         cursor.execute("""
-            SELECT o.*, s.dept_id 
+            SELECT o.*, s.dept_id, s.full_name as student_name, s.parent_mobile, d.dept_name
             FROM outpasses o
             JOIN users s ON o.student_id = s.user_id
             JOIN users h ON h.user_id = %s
+            LEFT JOIN departments d ON s.dept_id = d.dept_id
             WHERE o.outpass_id = %s AND s.dept_id = h.dept_id
         """, (session['user_id'], outpass_id))
         
@@ -382,6 +393,15 @@ def override_approval(outpass_id):
         # Log action
         log_action(conn, outpass_id, session['user_id'], 'hod_approved', 
                   f'OVERRIDE: {remarks}', get_client_ip())
+        
+        # Send notification to parent
+        if outpass['parent_mobile']:
+            message = (
+                f"Emergency Update: Your ward {outpass['student_name']}'s outpass "
+                f"({outpass['dept_name']}) has been approved by HOD (Emergency Override). "
+                f"Departure: {outpass['out_date']} {format_time(outpass['out_time'])}."
+            )
+            send_sms_notification(outpass['parent_mobile'], message)
         
         cursor.close()
         conn.close()
