@@ -21,17 +21,19 @@ app.register_blueprint(hod_bp)
 app.register_blueprint(security_bp)
 app.register_blueprint(admin_bp)
 
-# Database initialization flag
-_db_initialized = False
-
-@app.before_request
-def check_db_init():
-    """Lazily initialize database on first request to prevent startup delay/hang"""
-    global _db_initialized
-    if not _db_initialized:
-        print("Lazy-checking database initialization...")
-        init_db()
-        _db_initialized = True
+# Manual Database Initialization Route (Use only if needed)
+@app.route('/api/admin/init-db', methods=['POST'])
+def manual_init_db():
+    """Manually trigger database initialization"""
+    # Simple secret check for security (optional)
+    if os.environ.get("ADMIN_KEY") and os.environ.get("ADMIN_KEY") != os.environ.get("SECRET_KEY"):
+         return {'error': 'Unauthorized'}, 401
+         
+    success = init_db()
+    if success:
+        return {'message': 'Database initialized successfully'}, 200
+    else:
+        return {'error': 'Database initialization failed'}, 500
 
 # Serve frontend files
 @app.route('/')
