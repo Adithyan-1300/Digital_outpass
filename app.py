@@ -21,10 +21,8 @@ app.register_blueprint(hod_bp)
 app.register_blueprint(security_bp)
 app.register_blueprint(admin_bp)
 
-# --- FORCE DATABASE INITIALIZATION ON RENDER ---
-# This runs every time the server starts, ensuring data is there
 with app.app_context():
-    print("Checking database initialization...")
+    print("Checking database initialization (Ensuring schema exists)...")
     init_db() 
 
 # Serve frontend files

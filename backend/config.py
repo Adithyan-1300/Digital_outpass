@@ -27,26 +27,41 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
 
 def get_db_connection():
     try:
+        # Get connection parameters with safe defaults
+        db_host = os.environ.get("DB_HOST", "localhost")
+        db_user = os.environ.get("DB_USER", "root")
+        db_password = os.environ.get("DB_PASSWORD", "")
+        db_name = os.environ.get("DB_NAME", "outpass_db")
+        db_port = os.environ.get("DB_PORT", "3306")
+        
+        # Ensure port is an integer
+        try:
+            db_port = int(db_port)
+        except (ValueError, TypeError):
+            db_port = 3306
+
         return mysql.connector.connect(
-            host=os.environ.get("DB_HOST"),
-            user=os.environ.get("DB_USER"),
-            password=os.environ.get("DB_PASSWORD"),
-            database=os.environ.get("DB_NAME"),
-            port=int(os.environ.get("DB_PORT")),
-            ssl_disabled=False
+            host=db_host,
+            user=db_user,
+            password=db_password,
+            database=db_name,
+            port=db_port,
+            ssl_disabled=False,
+            autocommit=True,
+            connection_timeout=10
         )
     except Exception as e:
-        print("Actual Error:", e)
+        print(f"[ERROR] Database connection failed: {e}")
         return None
 
 
 # ================= INIT DB FUNCTION =================
 
 def init_db():
-    """Initializes schema and sample data."""
+    """Initializes schema and sample data safely."""
     conn = get_db_connection()
     if not conn:
-        print("[ERROR] Cannot initialize DB: Ensure MySQL is running and credentials are correct")
+        print("[ERROR] Cannot initialize DB: Connection failed")
         return False
 
     schema_path = os.path.join(BASE_DIR, 'database', 'schema.sql')
@@ -58,21 +73,35 @@ def init_db():
         # Execute Schema
         if os.path.exists(schema_path):
             with open(schema_path, 'r', encoding='utf-8') as f:
-                for statement in f.read().split(';'):
-                    if statement.strip():
+                content = f.read()
+                # Split by semicolon but ignore empty statements
+                statements = [s.strip() for s in content.split(';') if s.strip()]
+                for statement in statements:
+                    try:
                         cursor.execute(statement)
-            print("[OK] Database schema initialized")
+                    except mysql.connector.Error as err:
+                        print(f"[WARN] Schema statement failed (might already exist): {err.msg}")
+            print("[OK] Database schema verified/initialized")
         
-        # Execute Sample Data
-        if os.path.exists(sample_path):
+        # Execute Sample Data Only if no users exist (to prevent duplicates on every restart)
+        try:
+            cursor.execute("SELECT COUNT(*) FROM users")
+            user_count = cursor.fetchone()[0]
+        except:
+            user_count = 0
+        
+        if user_count == 0 and os.path.exists(sample_path):
             with open(sample_path, 'r', encoding='utf-8') as f:
-                for statement in f.read().split(';'):
-                    if statement.strip():
-                        try:
-                            cursor.execute(statement)
-                        except mysql.connector.Error:
-                            pass # Skip duplicates
-            print("[OK] Sample data loaded")
+                content = f.read()
+                statements = [s.strip() for s in content.split(';') if s.strip()]
+                for statement in statements:
+                    try:
+                        cursor.execute(statement)
+                    except mysql.connector.Error as err:
+                        print(f"[WARN] Sample data statement failed: {err.msg}")
+            print("[OK] Sample data loaded (first time setup)")
+        else:
+            print("[INFO] Skipping sample data (database already contains data)")
 
         conn.commit()
         cursor.close()
@@ -80,6 +109,8 @@ def init_db():
         return True
     except Exception as e:
         print(f"[ERROR] Error during DB init: {e}")
+        if conn:
+            conn.close()
         return False
 
 # File Handling

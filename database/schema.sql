@@ -1,14 +1,8 @@
 -- Smart Outpass Management System Database Schema
 -- Database: outpass_db
 
--- Drop tables if they exist (for clean setup)
-DROP TABLE IF EXISTS outpass_logs;
-DROP TABLE IF EXISTS outpasses;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS departments;
-
 -- Departments Table
-CREATE TABLE departments (
+CREATE TABLE IF NOT EXISTS departments (
     dept_id INT PRIMARY KEY AUTO_INCREMENT,
     dept_name VARCHAR(100) NOT NULL UNIQUE,
     dept_code VARCHAR(10) NOT NULL UNIQUE,
@@ -17,7 +11,7 @@ CREATE TABLE departments (
 
 -- Users Table (Students, Staff, HOD, Security, Admin)
 -- Users Table (Updated with Parent details)
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     user_id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
@@ -37,7 +31,7 @@ CREATE TABLE users (
 );
 
 -- Outpasses Table
-CREATE TABLE outpasses (
+CREATE TABLE IF NOT EXISTS outpasses (
     outpass_id INT PRIMARY KEY AUTO_INCREMENT,
     student_id INT NOT NULL,
     out_date DATE NOT NULL,
@@ -83,7 +77,7 @@ CREATE TABLE outpasses (
 );
 
 -- Outpass Logs Table (for tracking all actions)
-CREATE TABLE outpass_logs (
+CREATE TABLE IF NOT EXISTS outpass_logs (
     log_id INT PRIMARY KEY AUTO_INCREMENT,
     outpass_id INT NOT NULL,
     action_by INT NOT NULL,
