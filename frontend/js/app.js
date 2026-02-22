@@ -9,8 +9,8 @@ let currentUser = null;
 // Initialize app
 document.addEventListener('DOMContentLoaded', function () {
     // Check if user is already logged in
-    // checkSession();
-    showLoginPage();
+    checkSession();
+    // showLoginPage();
 
     // Event listeners
     const listeners = [
@@ -235,6 +235,7 @@ async function handleLogout(e) {
     try {
         await fetch(`${API_BASE}/auth/logout`, { method: 'POST' });
         currentUser = null;
+        localStorage.removeItem('currentModule');
         showLoginPage();
     } catch (error) {
         console.error('Logout error:', error);
@@ -399,9 +400,27 @@ function showDashboard() {
         }
     }
 
-    // Load default module
-    const defaultModule = `${currentUser.role}-dashboard`;
-    loadModule(defaultModule);
+    // Load default module or restore previous one
+    const savedModule = localStorage.getItem('currentModule');
+    let moduleToLoad = `${currentUser.role}-dashboard`;
+
+    // Only restore if it belongs to the current role's modules
+    if (savedModule) {
+        const rolePrefix = currentUser.role === 'admin' ? 'admin' :
+            currentUser.role === 'student' ? 'student' :
+                currentUser.role === 'staff' ? 'staff' :
+                    currentUser.role === 'hod' ? 'hod' :
+                        currentUser.role === 'security' ? 'security' : '';
+
+        // List of all non-prefixed modules (shared or special)
+        const commonModules = ['apply-outpass', 'my-outpasses', 'my-history', 'pending-requests', 'my-students', 'hod-approvals', 'dept-statistics', 'all-outpasses', 'scan-qr', 'students-out', 'recent-activity', 'manage-users', 'manage-departments', 'system-reports'];
+
+        if (savedModule.startsWith(rolePrefix) || commonModules.includes(savedModule)) {
+            moduleToLoad = savedModule;
+        }
+    }
+
+    loadModule(moduleToLoad);
 }
 
 // Navigation handler
@@ -414,6 +433,9 @@ function handleNavigation(e) {
 // Load module content
 function loadModule(module) {
     const content = document.getElementById('moduleContent');
+
+    // Save current module to localStorage for persistence on refresh
+    localStorage.setItem('currentModule', module);
 
     // Update active nav link
     document.querySelectorAll('.nav-link').forEach(link => {

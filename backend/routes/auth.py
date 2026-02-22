@@ -101,6 +101,71 @@ def login():
         print(f"Login error: {e}")
         return jsonify({'success': False, 'message': 'Server error during login'}), 500
 
+@auth_bp.route('/session', methods=['GET'])
+def check_session():
+    """Check if user session is active and return user data"""
+    try:
+        if 'user_id' not in session:
+            return jsonify({'logged_in': False}), 200
+        
+        conn = get_db_connection()
+        if not conn:
+            return jsonify({'logged_in': False, 'error': 'Database connection failed'}), 500
+        
+        cursor = conn.cursor(dictionary=True)
+        
+        # Fetch latest user data
+        query = """
+            SELECT u.*, d.dept_name, d.dept_code
+            FROM users u
+            LEFT JOIN departments d ON u.dept_id = d.dept_id
+            WHERE u.user_id = %s AND u.is_active = TRUE
+        """
+        cursor.execute(query, (session['user_id'],))
+        user = cursor.fetchone()
+        
+        if not user:
+            cursor.close()
+            conn.close()
+            session.clear() # Clear invalid session
+            return jsonify({'logged_in': False}), 200
+        
+        # Get advisor name for students
+        advisor_name = None
+        if user['role'] == 'student' and user['advisor_id']:
+            cursor.execute("SELECT full_name FROM users WHERE user_id = %s", (user['advisor_id'],))
+            advisor = cursor.fetchone()
+            if advisor:
+                advisor_name = advisor['full_name']
+        
+        cursor.close()
+        conn.close()
+        
+        user_data = {
+            'user_id': user['user_id'],
+            'username': user['username'],
+            'email': user['email'],
+            'full_name': user['full_name'],
+            'role': user['role'],
+            'dept_name': user.get('dept_name'),
+            'dept_code': user.get('dept_code'),
+            'registration_no': user.get('registration_no'),
+            'phone': user.get('phone'),
+            'parent_name': user.get('parent_name'),
+            'parent_mobile': user.get('parent_mobile'),
+            'profile_image': user.get('profile_image'),
+            'advisor_name': advisor_name
+        }
+        
+        return jsonify({
+            'logged_in': True,
+            'user': user_data
+        }), 200
+        
+    except Exception as e:
+        print(f"Session check error: {e}")
+        return jsonify({'logged_in': False, 'error': 'Server error'}), 500
+
 @auth_bp.route('/logout', methods=['POST'])
 def logout():
     """User logout endpoint"""

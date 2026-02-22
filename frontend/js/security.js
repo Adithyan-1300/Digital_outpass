@@ -221,6 +221,14 @@ async function verifyQRCodeFromScan(qrCode) {
                 <div class="success-message show" style="padding: 24px; border-radius: 12px; border: none; background: #ecfdf5; color: #065f46;">
                     <div style="font-size: 48px; margin-bottom: 16px;">✓</div>
                     <h3 style="margin-bottom: 20px;">Valid Outpass</h3>
+                    
+                    <div class="scan-profile-container">
+                        ${data.student.profile_image ? 
+                            `<img src="/uploads/${data.student.profile_image}" class="scan-profile-img" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(data.student.name)}&background=random'">` : 
+                            `<div class="scan-profile-placeholder"><i class="ph ph-user"></i></div>`
+                        }
+                    </div>
+
                     <div style="text-align: left; background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
                         <p style="margin-bottom: 8px;"><strong>Student:</strong> ${data.student.name}</p>
                         <p style="margin-bottom: 8px;"><strong>Reg No:</strong> ${data.student.registration_no}</p>
@@ -272,6 +280,14 @@ async function recordExit(qrCode) {
                 <div class="success-message show" style="padding: 32px; border-radius: 12px; background: #ecfdf5;">
                     <div style="font-size: 48px; color: var(--success); margin-bottom: 16px;">✓</div>
                     <h3 style="margin-bottom: 8px; color: #065f46;">Record Updated</h3>
+                    
+                    <div class="scan-profile-container" style="width: 80px; height: 80px;">
+                         ${data.student.profile_image ? 
+                            `<img src="/uploads/${data.student.profile_image}" class="scan-profile-img" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(data.student.name)}&background=random'">` : 
+                            `<div class="scan-profile-placeholder"><i class="ph ph-user"></i></div>`
+                        }
+                    </div>
+
                     <p style="color: #065f46; margin-bottom: 24px;">Exit recorded for ${data.student.name}</p>
                     <button onclick="loadModule('scan-qr')" class="btn-modern btn-modern-primary">
                         Scan Next Pass

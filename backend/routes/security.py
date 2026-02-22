@@ -40,6 +40,7 @@ def scan_qr():
                 s.full_name as student_name,
                 s.registration_no,
                 s.phone as student_phone,
+                s.profile_image,
                 d.dept_name,
                 d.dept_code
             FROM outpasses o
@@ -128,7 +129,8 @@ def scan_qr():
                 'name': outpass['student_name'],
                 'registration_no': outpass['registration_no'],
                 'department': outpass['dept_name'],
-                'phone': outpass['student_phone']
+                'phone': outpass['student_phone'],
+                'profile_image': outpass['profile_image']
             },
             'outpass': {
                 'outpass_id': outpass['outpass_id'],
@@ -171,6 +173,7 @@ def verify_qr():
                 s.full_name as student_name,
                 s.registration_no,
                 s.phone as student_phone,
+                s.profile_image,
                 d.dept_name
             FROM outpasses o
             JOIN users s ON o.student_id = s.user_id
@@ -206,7 +209,8 @@ def verify_qr():
             'student': {
                 'name': outpass['student_name'],
                 'registration_no': outpass['registration_no'],
-                'department': outpass['dept_name']
+                'department': outpass['dept_name'],
+                'profile_image': outpass['profile_image']
             } if is_valid else None,
             'outpass': {
                 'outpass_id': outpass['outpass_id'],
