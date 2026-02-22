@@ -98,10 +98,8 @@ function loadApplyOutpass() {
                             ${Array.from({ length: 12 }, (_, i) => i + 1).map(h => `<option value="${h.toString().padStart(2, '0')}">${h.toString().padStart(2, '0')}</option>`).join('')}
                         </select>
                         <span style="display: flex; align-items: center; font-weight: bold;">:</span>
-                        <select name="out_minute" required style="flex: 1; border-radius: 12px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0; appearance: none; -webkit-appearance: none;">
-                            <option value="">MM</option>
-                            ${['00', '15', '30', '45'].map(m => `<option value="${m}">${m}</option>`).join('')}
-                        </select>
+                        <input type="number" name="out_minute" min="0" max="59" placeholder="MM" required 
+                            style="flex: 1; border-radius: 12px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0;">
                         <select name="out_ampm" required style="flex: 1; border-radius: 12px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0; font-weight: 600;">
                             <option value="AM">AM</option>
                             <option value="PM">PM</option>
@@ -117,10 +115,8 @@ function loadApplyOutpass() {
                             ${Array.from({ length: 12 }, (_, i) => i + 1).map(h => `<option value="${h.toString().padStart(2, '0')}">${h.toString().padStart(2, '0')}</option>`).join('')}
                         </select>
                         <span style="display: flex; align-items: center; font-weight: bold;">:</span>
-                        <select name="return_minute" required style="flex: 1; border-radius: 12px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0; appearance: none; -webkit-appearance: none;">
-                            <option value="">MM</option>
-                            ${['00', '15', '30', '45'].map(m => `<option value="${m}">${m}</option>`).join('')}
-                        </select>
+                        <input type="number" name="return_minute" min="0" max="59" placeholder="MM" required 
+                            style="flex: 1; border-radius: 12px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0;">
                         <select name="return_ampm" required style="flex: 1; border-radius: 12px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0; font-weight: 600;">
                             <option value="AM">AM</option>
                             <option value="PM">PM</option>
@@ -168,13 +164,19 @@ async function handleApplyOutpass(e) {
     let outHour = parseInt(data.out_hour, 10);
     if (data.out_ampm === 'PM' && outHour < 12) outHour += 12;
     if (data.out_ampm === 'AM' && outHour === 12) outHour = 0;
-    data.out_time = `${outHour.toString().padStart(2, '0')}:${data.out_minute}:00`;
+
+    // Pad minute to 2 digits
+    const outMinute = data.out_minute.toString().padStart(2, '0');
+    data.out_time = `${outHour.toString().padStart(2, '0')}:${outMinute}:00`;
 
     // Parse 12-hour to 24-hour for Expected Return Time
     let returnHour = parseInt(data.return_hour, 10);
     if (data.return_ampm === 'PM' && returnHour < 12) returnHour += 12;
     if (data.return_ampm === 'AM' && returnHour === 12) returnHour = 0;
-    data.expected_return_time = `${returnHour.toString().padStart(2, '0')}:${data.return_minute}:00`;
+
+    // Pad minute to 2 digits
+    const returnMinute = data.return_minute.toString().padStart(2, '0');
+    data.expected_return_time = `${returnHour.toString().padStart(2, '0')}:${returnMinute}:00`;
 
     // Remove temporary individual fields from payload
     delete data.out_hour; delete data.out_minute; delete data.out_ampm;
