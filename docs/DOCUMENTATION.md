@@ -418,7 +418,7 @@ Student      System      Advisor       HOD        Security
     "username": "student1",
     "full_name": "Amit Patel",
     "role": "student",
-    "email": "cse2021001@college.edu"
+    "email": "cse2021001@vetias.ac.in"
   }
 }
 ```
@@ -543,7 +543,7 @@ Student      System      Advisor       HOD        Security
 Steps:
 1. Navigate to registration page
 2. Enter valid student details
-3. Use college email (@college.edu)
+3. Use college email (@vetias.ac.in)
 4. Submit form
 
 Expected: Success message, redirect to login

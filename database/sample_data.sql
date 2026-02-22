@@ -26,31 +26,31 @@ INSERT INTO departments (dept_name, dept_code) VALUES
 
 -- Admin
 INSERT INTO users (username, email, password_hash, full_name, role, dept_id, phone) VALUES
-('admin', 'admin@college.edu', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'System Administrator', 'admin', NULL, '9876543210');
+('admin', 'admin@vetias.ac.in', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'System Administrator', 'admin', NULL, '9876543210');
 
 -- HODs
 INSERT INTO users (username, email, password_hash, full_name, role, dept_id, phone) VALUES
-('hod_cse', 'hod.cse@college.edu', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Dr. Rajesh Kumar', 'hod', 1, '9876543211'),
-('hod_ece', 'hod.ece@college.edu', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Dr. Priya Sharma', 'hod', 2, '9876543212');
+('hod_cse', 'hod.cse@vetias.ac.in', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Dr. Rajesh Kumar', 'hod', 1, '9876543211'),
+('hod_ece', 'hod.ece@vetias.ac.in', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Dr. Priya Sharma', 'hod', 2, '9876543212');
 
 -- Staff/Advisors
 INSERT INTO users (username, email, password_hash, full_name, role, dept_id, phone) VALUES
-('staff_cse1', 'advisor1.cse@college.edu', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Prof. Anil Verma', 'staff', 1, '9876543213'),
-('staff_cse2', 'advisor2.cse@college.edu', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Prof. Sneha Reddy', 'staff', 1, '9876543214'),
-('staff_ece1', 'advisor1.ece@college.edu', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Prof. Vikram Singh', 'staff', 2, '9876543215');
+('staff_cse1', 'advisor1.cse@vetias.ac.in', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Prof. Anil Verma', 'staff', 1, '9876543213'),
+('staff_cse2', 'advisor2.cse@vetias.ac.in', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Prof. Sneha Reddy', 'staff', 1, '9876543214'),
+('staff_ece1', 'advisor1.ece@vetias.ac.in', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Prof. Vikram Singh', 'staff', 2, '9876543215');
 
 -- Security
 INSERT INTO users (username, email, password_hash, full_name, role, dept_id, phone) VALUES
-('security1', 'security1@college.edu', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Ram Prasad', 'security', NULL, '9876543216'),
-('security2', 'security2@college.edu', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Shyam Kumar', 'security', NULL, '9876543217');
+('security1', 'security1@vetias.ac.in', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Ram Prasad', 'security', NULL, '9876543216'),
+('security2', 'security2@vetias.ac.in', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Shyam Kumar', 'security', NULL, '9876543217');
 
 -- Students
 INSERT INTO users (username, email, password_hash, full_name, role, dept_id, registration_no, phone, advisor_id) VALUES
-('student1', 'cse2021001@college.edu', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Amit Patel', 'student', 1, 'CSE2021001', '9876543218', 4),
-('student2', 'cse2021002@college.edu', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Priya Gupta', 'student', 1, 'CSE2021002', '9876543219', 4),
-('student3', 'cse2021003@college.edu', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Rahul Sharma', 'student', 1, 'CSE2021003', '9876543220', 5),
-('student4', 'ece2021001@college.edu', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Sneha Rao', 'student', 2, 'ECE2021001', '9876543221', 6),
-('student5', 'ece2021002@college.edu', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Karthik Reddy', 'student', 2, 'ECE2021002', '9876543222', 6);
+('student1', 'cse2021001@vetias.ac.in', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Amit Patel', 'student', 1, 'CSE2021001', '9876543218', 4),
+('student2', 'cse2021002@vetias.ac.in', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Priya Gupta', 'student', 1, 'CSE2021002', '9876543219', 4),
+('student3', 'cse2021003@vetias.ac.in', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Rahul Sharma', 'student', 1, 'CSE2021003', '9876543220', 5),
+('student4', 'ece2021001@vetias.ac.in', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Sneha Rao', 'student', 2, 'ECE2021001', '9876543221', 6),
+('student5', 'ece2021002@vetias.ac.in', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Karthik Reddy', 'student', 2, 'ECE2021002', '9876543222', 6);
 
 -- Sample Outpasses (with different statuses for testing)
 INSERT INTO outpasses (student_id, out_date, out_time, expected_return_time, reason, destination, advisor_id, hod_id) VALUES
