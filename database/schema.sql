@@ -23,12 +23,16 @@ CREATE TABLE IF NOT EXISTS users (
     phone VARCHAR(15),
     parent_name VARCHAR(100),
     parent_mobile VARCHAR(15),
+    profile_image VARCHAR(255),
     advisor_id INT,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (dept_id) REFERENCES departments(dept_id),
     FOREIGN KEY (advisor_id) REFERENCES users(user_id)
 );
+
+-- Migration for existing databases
+ALTER TABLE users ADD COLUMN profile_image VARCHAR(255) AFTER parent_mobile;
 
 -- Outpasses Table
 CREATE TABLE IF NOT EXISTS outpasses (
