@@ -389,7 +389,7 @@ function showDashboard() {
     const userAvatar = document.getElementById('userAvatar');
     if (userAvatar) {
         if (currentUser.profile_image) {
-            userAvatar.style.backgroundImage = `url(${currentUser.profile_image})`;
+            userAvatar.style.backgroundImage = `url(/uploads/${currentUser.profile_image})`;
             userAvatar.style.backgroundSize = 'cover';
             userAvatar.style.backgroundPosition = 'center';
             userAvatar.textContent = '';

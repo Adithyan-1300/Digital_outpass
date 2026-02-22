@@ -87,7 +87,7 @@ def login():
             'phone': user.get('phone'),
             'parent_name': user.get('parent_name'),
             'parent_mobile': user.get('parent_mobile'),
-            'profile_image': user.get('profile_image'),
+            'profile_image': user.get('profile_image').replace('uploads/', '', 1) if user.get('profile_image') else None,
             'advisor_name': advisor_name
         }
         
@@ -153,7 +153,7 @@ def check_session():
             'phone': user.get('phone'),
             'parent_name': user.get('parent_name'),
             'parent_mobile': user.get('parent_mobile'),
-            'profile_image': user.get('profile_image'),
+            'profile_image': user.get('profile_image').replace('uploads/', '', 1) if user.get('profile_image') else None,
             'advisor_name': advisor_name
         }
         
@@ -265,7 +265,7 @@ def register():
                 filename = secure_filename(f"{role}_{identifier}_{profile_file.filename}")
                 upload_path = os.path.join(app.config['UPLOAD_FOLDER'], 'profiles', filename)
                 profile_file.save(upload_path)
-                profile_image_path = f"uploads/profiles/{filename}"
+                profile_image_path = f"profiles/{filename}"
         
         # Get database connection
         conn = get_db_connection()

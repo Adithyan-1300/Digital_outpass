@@ -183,15 +183,43 @@ def send_notification(user_email, subject, message):
     print(f"Message: {message}")
     return True
 
+import os
+from twilio.rest import Client
+
 def send_sms_notification(phone, message):
     """
-    Send SMS notification to mobile number
-    This is a placeholder - simulate SMS gateway
+    Send SMS notification to mobile number using Twilio
     """
-    # TODO: Integrate with SMS API like Twilio, MessageBird, etc.
-    print(f"📱 Simulated SMS to {phone}")
-    print(f"Message: {message}")
-    return True
+    try:
+        account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
+        auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
+        from_number = os.environ.get('TWILIO_PHONE_NUMBER')
+
+        if not all([account_sid, auth_token, from_number]):
+            print("⚠️ Twilio credentials missing in environment. Falling back to simulation.")
+            print(f"📱 Simulated SMS to {phone}")
+            print(f"Message: {message}")
+            return False
+
+        client = Client(account_sid, auth_token)
+        
+        # Ensure phone number is in E.164 format (starts with +)
+        # Assuming user provides 10 digits, we might need to add country code (+91 for India)
+        formatted_phone = phone if phone.startswith('+') else f"+91{phone}"
+
+        message = client.messages.create(
+            body=message,
+            from_=from_number,
+            to=formatted_phone
+        )
+        print(f"✅ SMS sent successfully! SID: {message.sid}")
+        return True
+    except Exception as e:
+        print(f"❌ Error sending SMS via Twilio: {e}")
+        # Fallback to simulation for visibility
+        print(f"📱 Simulated SMS to {phone}")
+        print(f"Message: {message}")
+        return False
 
 def is_qr_valid(qr_code, qr_expires_at, is_qr_used):
     """
