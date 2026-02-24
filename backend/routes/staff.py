@@ -51,6 +51,8 @@ def get_pending_requests():
         # Format datetime fields
         for req in requests:
             req['out_date'] = format_date(req['out_date'])
+            if 'return_date' in req and req['return_date']:
+                req['return_date'] = format_date(req['return_date'])
             req['out_time'] = format_time(req['out_time'])
             req['expected_return_time'] = format_time(req['expected_return_time'])
             req['created_at'] = format_datetime(req['created_at'])
@@ -260,6 +262,8 @@ def get_student_history(student_id):
         # Format dates
         for item in history:
             item['out_date'] = format_date(item['out_date'])
+            if 'return_date' in item and item['return_date']:
+                item['return_date'] = format_date(item['return_date'])
             item['out_time'] = format_time(item['out_time'])
             item['expected_return_time'] = format_time(item['expected_return_time'])
             item['created_at'] = format_datetime(item['created_at'])

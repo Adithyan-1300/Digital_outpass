@@ -89,14 +89,15 @@ def apply_outpass():
         # Insert outpass request
         query = """
             INSERT INTO outpasses 
-            (student_id, out_date, out_time, expected_return_time, reason, 
+            (student_id, out_date, return_date, out_time, expected_return_time, reason, 
              destination, advisor_id, hod_id)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         
         cursor.execute(query, (
             session['user_id'],
             data['out_date'],
+            data.get('return_date', data['out_date']),
             data['out_time'],
             data['expected_return_time'],
             data['reason'],
@@ -167,6 +168,8 @@ def get_my_outpasses():
         # Format datetime fields
         for outpass in outpasses:
             outpass['out_date'] = format_date(outpass['out_date'])
+            if 'return_date' in outpass and outpass['return_date']:
+                outpass['return_date'] = format_date(outpass['return_date'])
             outpass['out_time'] = format_time(outpass['out_time'])
             outpass['expected_return_time'] = format_time(outpass['expected_return_time'])
             outpass['created_at'] = format_datetime(outpass['created_at'])
@@ -232,6 +235,8 @@ def get_outpass_details(outpass_id):
         
         # Format datetime fields
         outpass['out_date'] = format_date(outpass['out_date'])
+        if 'return_date' in outpass and outpass['return_date']:
+            outpass['return_date'] = format_date(outpass['return_date'])
         outpass['out_time'] = format_time(outpass['out_time'])
         outpass['expected_return_time'] = format_time(outpass['expected_return_time'])
         outpass['created_at'] = format_datetime(outpass['created_at'])

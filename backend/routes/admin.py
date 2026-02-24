@@ -686,6 +686,8 @@ def export_report():
         # Format dates
         for op in outpasses:
             op['out_date'] = format_date(op['out_date'])
+            if 'return_date' in op and op['return_date']:
+                op['return_date'] = format_date(op['return_date'])
             op['created_at'] = format_datetime(op['created_at'])
             op['actual_exit_time'] = format_datetime(op['actual_exit_time'])
             op['actual_entry_time'] = format_datetime(op['actual_entry_time'])

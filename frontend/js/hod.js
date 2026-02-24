@@ -180,6 +180,9 @@ async function reviewHODRequest(outpassId) {
                                         <i class="ph ph-users"></i> Parent: <span style="color: var(--text-main);">${op.parent_name || 'N/A'}</span> 
                                         ${op.parent_mobile ? `| <span style="color: var(--primary);"><i class="ph ph-phone"></i> ${op.parent_mobile}</span>` : ''}
                                     </p>
+                                    <p style="color: var(--success); font-size: 13px; margin-top: 8px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; background: rgba(16, 185, 129, 0.1); padding: 4px 10px; border-radius: 6px;">
+                                        <i class="ph ph-phone-call"></i> Parent Contact Verified by Staff
+                                    </p>
                                 </div>
                                 <div>
                                     <h3 style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.1em; margin-bottom: 8px; font-weight: 800;">Schedule</h3>
