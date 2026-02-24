@@ -374,10 +374,10 @@ async function viewOutpassDetails(outpassId) {
                                     <div style="font-size: 0.6875rem; text-transform: uppercase; color: var(--text-muted); font-weight: 800; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Departure</div>
                                     <div style="font-weight: 700; color: var(--text-main);">${app.formatTime(op.out_time)}</div>
                                 </div>
-                                <div>
+                                ${op.expected_return_time === '23:59:00' ? '' : `<div>
                                     <div style="font-size: 0.6875rem; text-transform: uppercase; color: var(--text-muted); font-weight: 800; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Expected Return</div>
                                     <div style="font-weight: 700; color: var(--text-main);">${app.formatTime(op.expected_return_time)}</div>
-                                </div>
+                                </div>`}
                             </div>
                             <div style="margin-top: 1.5rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
                                 <div style="font-size: 0.6875rem; text-transform: uppercase; color: var(--text-muted); font-weight: 800; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Declared Objective</div>

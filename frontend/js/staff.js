@@ -101,8 +101,8 @@ async function loadPendingRequests() {
                     const parentInfo = req.parent_name
                         ? `<span style="font-weight:600;font-size:0.85rem;">${req.parent_name}</span><br>
                            ${req.parent_mobile
-                               ? `<a href="tel:${req.parent_mobile}" style="color:var(--primary);font-size:0.8rem;font-weight:500;"><i class="ph ph-phone"></i> ${req.parent_mobile}</a>`
-                               : '<span style="color:#94a3b8;font-size:0.8rem;">No mobile</span>'}`
+                            ? `<a href="tel:${req.parent_mobile}" style="color:var(--primary);font-size:0.8rem;font-weight:500;"><i class="ph ph-phone"></i> ${req.parent_mobile}</a>`
+                            : '<span style="color:#94a3b8;font-size:0.8rem;">No mobile</span>'}`
                         : '<span style="color:#94a3b8;font-size:0.8rem;">N/A</span>';
 
                     html += `
@@ -158,8 +158,8 @@ async function reviewRequest(outpassId) {
                     <div style="display:flex;gap:1.5rem;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;justify-content:center;text-align:center;">
                         <div style="width:90px;height:90px;border-radius:50%;background:#f1f5f9;overflow:hidden;display:flex;align-items:center;justify-content:center;border:2px solid var(--primary);flex-shrink:0;">
                             ${op.profile_image
-                                ? `<img src="/uploads/${op.profile_image}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">`
-                                : '<i class="ph ph-user" style="font-size:2.5rem;color:#cbd5e1;"></i>'}
+                    ? `<img src="/uploads/${op.profile_image}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">`
+                    : '<i class="ph ph-user" style="font-size:2.5rem;color:#cbd5e1;"></i>'}
                         </div>
                         <div style="flex:1;min-width:200px;">
                             <h2 class="login-title" style="font-size:1.4rem;margin-bottom:0.25rem;">Review Request</h2>
@@ -196,10 +196,10 @@ async function reviewRequest(outpassId) {
                                 <p style="font-size:0.675rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:0.2rem;">Out Time</p>
                                 <p style="font-weight:600;">${app.formatTime(op.out_time)}</p>
                             </div>
-                            <div>
+                            ${op.expected_return_time === '23:59:00' ? '' : `<div>
                                 <p style="font-size:0.675rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:0.2rem;">Return Time</p>
                                 <p style="font-weight:600;">${app.formatTime(op.expected_return_time)}</p>
-                            </div>
+                            </div>`}
                             <div>
                                 <p style="font-size:0.675rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:0.2rem;">Reason</p>
                                 <p style="font-weight:600;">${op.reason}</p>

@@ -187,7 +187,7 @@ async function reviewHODRequest(outpassId) {
                                 <div>
                                     <h3 style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.1em; margin-bottom: 8px; font-weight: 800;">Schedule</h3>
                                     <p style="font-weight: 700; font-size: 18px; color: var(--text-main);"><i class="ph ph-calendar-blank" style="color: var(--primary);"></i> ${app.formatDate(op.out_date)}</p>
-                                    <p style="font-weight: 600; color: var(--secondary); font-size: 14px;">${app.formatTime(op.out_time)} — ${app.formatTime(op.expected_return_time)}</p>
+                                    <p style="font-weight: 600; color: var(--secondary); font-size: 14px;">${app.formatTime(op.out_time)}${op.expected_return_time === '23:59:00' ? '' : ' — ' + app.formatTime(op.expected_return_time)}</p>
                                 </div>
                             </div>
                         </div>

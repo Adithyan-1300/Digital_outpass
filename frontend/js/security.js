@@ -223,10 +223,10 @@ async function verifyQRCodeFromScan(qrCode) {
                     <h3 style="margin-bottom: 20px;">Valid Outpass</h3>
                     
                     <div class="scan-profile-container">
-                        ${data.student.profile_image ? 
-                            `<img src="/uploads/${data.student.profile_image}" class="scan-profile-img" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(data.student.name)}&background=random'">` : 
-                            `<div class="scan-profile-placeholder"><i class="ph ph-user"></i></div>`
-                        }
+                        ${data.student.profile_image ?
+                    `<img src="/uploads/${data.student.profile_image}" class="scan-profile-img" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(data.student.name)}&background=random'">` :
+                    `<div class="scan-profile-placeholder"><i class="ph ph-user"></i></div>`
+                }
                     </div>
 
                     <div style="text-align: left; background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
@@ -282,10 +282,10 @@ async function recordExit(qrCode) {
                     <h3 style="margin-bottom: 8px; color: #065f46;">Record Updated</h3>
                     
                     <div class="scan-profile-container" style="width: 80px; height: 80px;">
-                         ${data.student.profile_image ? 
-                            `<img src="/uploads/${data.student.profile_image}" class="scan-profile-img" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(data.student.name)}&background=random'">` : 
-                            `<div class="scan-profile-placeholder"><i class="ph ph-user"></i></div>`
-                        }
+                         ${data.student.profile_image ?
+                    `<img src="/uploads/${data.student.profile_image}" class="scan-profile-img" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(data.student.name)}&background=random'">` :
+                    `<div class="scan-profile-placeholder"><i class="ph ph-user"></i></div>`
+                }
                     </div>
 
                     <p style="color: #065f46; margin-bottom: 24px;">Exit recorded for ${data.student.name}</p>
@@ -345,7 +345,7 @@ async function loadStudentsOut() {
                             </td>
                             <td>${student.dept_name}</td>
                             <td>${app.formatDateTime(student.actual_exit_time)}</td>
-                            <td style="color: var(--warning); font-weight: 500;">${app.formatTime(student.expected_return_time)}</td>
+                            <td style="color: var(--warning); font-weight: 500;">${student.expected_return_time === '23:59:00' ? 'Not Returning Today' : app.formatTime(student.expected_return_time)}</td>
                             <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${student.reason || '-'}</td>
                             <td>
                                 <div style="display: flex; justify-content: flex-end;">
