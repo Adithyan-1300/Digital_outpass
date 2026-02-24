@@ -86,6 +86,10 @@ def approve_request(outpass_id):
     try:
         data = request.get_json()
         remarks = data.get('remarks', 'Approved by advisor')
+        parent_called = data.get('parent_called', False)
+        
+        if not parent_called:
+            return jsonify({'success': False, 'message': 'Parent confirmation is required before approval'}), 400
         
         conn = get_db_connection()
         if not conn:
