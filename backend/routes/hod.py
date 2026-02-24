@@ -63,8 +63,6 @@ def get_pending_approvals():
         # Format datetime fields
         for req in requests:
             req['out_date'] = format_date(req['out_date'])
-            if 'return_date' in req and req['return_date']:
-                req['return_date'] = format_date(req['return_date'])
             req['out_time'] = format_time(req['out_time'])
             req['expected_return_time'] = format_time(req['expected_return_time'])
             req['created_at'] = format_datetime(req['created_at'])
@@ -482,8 +480,6 @@ def get_all_department_outpasses():
         # Format dates
         for op in outpasses:
             op['out_date'] = format_date(op['out_date'])
-            if 'return_date' in op and op['return_date']:
-                op['return_date'] = format_date(op['return_date'])
             op['out_time'] = format_time(op['out_time'])
             op['expected_return_time'] = format_time(op['expected_return_time'])
             op['created_at'] = format_datetime(op['created_at'])

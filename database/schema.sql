@@ -39,7 +39,6 @@ CREATE TABLE IF NOT EXISTS outpasses (
     outpass_id INT PRIMARY KEY AUTO_INCREMENT,
     student_id INT NOT NULL,
     out_date DATE NOT NULL,
-    return_date DATE NULL,
     out_time TIME NOT NULL,
     expected_return_time TIME NOT NULL,
     reason TEXT NOT NULL,

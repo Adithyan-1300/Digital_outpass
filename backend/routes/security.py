@@ -383,8 +383,6 @@ def get_students_currently_out():
         # Format datetime
         for student in students:
             student['out_date'] = format_date(student['out_date'])
-            if 'return_date' in student and student['return_date']:
-                student['return_date'] = format_date(student['return_date'])
             student['out_time'] = format_time(student['out_time'])
             student['expected_return_time'] = format_time(student['expected_return_time'])
             student['actual_exit_time'] = format_datetime(student['actual_exit_time'])

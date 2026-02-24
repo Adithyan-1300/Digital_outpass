@@ -89,12 +89,12 @@ function loadApplyOutpass() {
                     <label style="font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em;">Type of Outpass</label>
                     <div style="display: flex; gap: 1rem; margin-top: 0.25rem;">
                         <label style="flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <input type="radio" name="outpass_type" value="same_day" checked onchange="document.getElementById('return_date_group').style.display='none'; document.getElementById('return_date').required=false;">
+                            <input type="radio" name="outpass_type" value="same_day" checked>
                             <span style="font-weight: 600;">Local Outing (Return Today)</span>
                         </label>
                         <label style="flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <input type="radio" name="outpass_type" value="overnight" onchange="document.getElementById('return_date_group').style.display='block'; document.getElementById('return_date').required=true;">
-                            <span style="font-weight: 600;">Home Visit (Multiple Days)</span>
+                            <input type="radio" name="outpass_type" value="overnight">
+                            <span style="font-weight: 600;">Home Visit (Not returning today)</span>
                         </label>
                     </div>
                 </div>
@@ -102,11 +102,6 @@ function loadApplyOutpass() {
                 <div class="form-group">
                     <label style="font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em;">Date of Departure</label>
                     <input type="date" name="out_date" id="out_date" min="${today}" max="${maxDateStr}" required style="border-radius: 12px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0;">
-                </div>
-                
-                <div class="form-group" id="return_date_group" style="display: none;">
-                    <label style="font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; color: var(--primary);">Expected Return Date</label>
-                    <input type="date" name="return_date" id="return_date" min="${today}" max="${maxDateStr}" style="border-radius: 12px; padding: 14px; background: #f0fdf4; border: 1px solid #bbf7d0;">
                 </div>
                 
                 <div class="form-group">
@@ -207,10 +202,6 @@ async function handleApplyOutpass(e) {
     const returnMinute = data.return_minute.toString().padStart(2, '0');
     data.expected_return_time = `${returnHour.toString().padStart(2, '0')}:${returnMinute}:00`;
 
-    if (data.outpass_type === 'same_day') {
-        data.return_date = data.out_date;
-    }
-
     // Remove temporary individual fields from payload
     delete data.outpass_type;
     delete data.out_hour; delete data.out_minute; delete data.out_ampm;
@@ -296,7 +287,7 @@ async function loadMyOutpasses() {
                     html += `
                         <tr style="cursor: pointer; transition: background 0.2s;" onclick="viewOutpassDetails(${outpass.outpass_id})">
                             <td>
-                                <div style="font-weight: 800; color: var(--text-main); font-size: 15px;">${app.formatDate(outpass.out_date)}${outpass.return_date && outpass.return_date !== outpass.out_date ? ` <span style="font-size:12px;color:var(--primary);">→ ${app.formatDate(outpass.return_date)}</span>` : ''}</div>
+                                <div style="font-weight: 800; color: var(--text-main); font-size: 15px;">${app.formatDate(outpass.out_date)}</div>
                                 <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">DEP: ${app.formatTime(outpass.out_time)}</div>
                             </td>
                             <td>
@@ -377,10 +368,7 @@ async function viewOutpassDetails(outpassId) {
                                 </div>
                                 <div>
                                     <div style="font-size: 0.6875rem; text-transform: uppercase; color: var(--text-muted); font-weight: 800; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Expected Return</div>
-                                    <div style="font-weight: 700; color: var(--text-main);">
-                                        ${op.return_date && op.return_date !== op.out_date ? `<span style="font-size: 12px; color: var(--primary);">${app.formatDate(op.return_date)}</span><br>` : ''}
-                                        ${app.formatTime(op.expected_return_time)}
-                                    </div>
+                                    <div style="font-weight: 700; color: var(--text-main);">${app.formatTime(op.expected_return_time)}</div>
                                 </div>
                             </div>
                             <div style="margin-top: 1.5rem; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
