@@ -89,12 +89,12 @@ function loadApplyOutpass() {
                     <label style="font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em;">Type of Outpass</label>
                     <div style="display: flex; gap: 1rem; margin-top: 0.25rem;">
                         <label style="flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <input type="radio" name="outpass_type" value="same_day" checked>
-                            <span style="font-weight: 600;">Local Outing (Return Today)</span>
+                            <input type="radio" name="outpass_type" value="same_day" checked onchange="document.getElementById('estimated_return_group').style.display='block';">
+                            <span style="font-weight: 600;">Return Today</span>
                         </label>
                         <label style="flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <input type="radio" name="outpass_type" value="overnight">
-                            <span style="font-weight: 600;">Home Visit (Not returning today)</span>
+                            <input type="radio" name="outpass_type" value="overnight" onchange="document.getElementById('estimated_return_group').style.display='none';">
+                            <span style="font-weight: 600;">Not returning today</span>
                         </label>
                     </div>
                 </div>
@@ -122,18 +122,18 @@ function loadApplyOutpass() {
                     </div>
                 </div>
                 
-                <div class="form-group">
+                <div class="form-group" id="estimated_return_group">
                     <label style="font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em;">Estimated Return</label>
                     <div style="display: flex; gap: 8px;">
-                        <select name="return_hour" required style="flex: 1; border-radius: 12px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0; appearance: none; -webkit-appearance: none;">
+                        <select name="return_hour" style="flex: 1; border-radius: 12px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0; appearance: none; -webkit-appearance: none;">
                             <option value="">HH</option>
                             ${Array.from({ length: 12 }, (_, i) => i + 1).map(h => `<option value="${h.toString().padStart(2, '0')}">${h.toString().padStart(2, '0')}</option>`).join('')}
                         </select>
                         <span style="display: flex; align-items: center; font-weight: bold;">:</span>
-                        <input type="number" name="return_minute" min="0" max="59" placeholder="MM" required 
+                        <input type="number" name="return_minute" min="0" max="59" placeholder="MM" 
                             oninput="if(this.value < 0) this.value = 0; if(this.value > 59) this.value = 59;"
                             style="flex: 1; border-radius: 12px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0;">
-                        <select name="return_ampm" required style="flex: 1; border-radius: 12px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0; font-weight: 600;">
+                        <select name="return_ampm" style="flex: 1; border-radius: 12px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0; font-weight: 600;">
                             <option value="AM">AM</option>
                             <option value="PM">PM</option>
                         </select>
@@ -177,9 +177,7 @@ async function handleApplyOutpass(e) {
     });
 
     const outMin = parseInt(data.out_minute, 10);
-    const returnMin = parseInt(data.return_minute, 10);
-
-    if (outMin < 0 || outMin > 59 || returnMin < 0 || returnMin > 59) {
+    if (outMin < 0 || outMin > 59) {
         showError(document.getElementById('applyError'), 'Minutes must be between 00 and 59');
         return;
     }
@@ -193,14 +191,24 @@ async function handleApplyOutpass(e) {
     const outMinute = data.out_minute.toString().padStart(2, '0');
     data.out_time = `${outHour.toString().padStart(2, '0')}:${outMinute}:00`;
 
-    // Parse 12-hour to 24-hour for Expected Return Time
-    let returnHour = parseInt(data.return_hour, 10);
-    if (data.return_ampm === 'PM' && returnHour < 12) returnHour += 12;
-    if (data.return_ampm === 'AM' && returnHour === 12) returnHour = 0;
+    if (data.outpass_type === 'same_day') {
+        const returnMin = parseInt(data.return_minute, 10);
+        if (!data.return_hour || !data.return_minute || returnMin < 0 || returnMin > 59) {
+            showError(document.getElementById('applyError'), 'Valid return time is required for single day passes');
+            return;
+        }
 
-    // Pad minute to 2 digits
-    const returnMinute = data.return_minute.toString().padStart(2, '0');
-    data.expected_return_time = `${returnHour.toString().padStart(2, '0')}:${returnMinute}:00`;
+        // Parse 12-hour to 24-hour for Expected Return Time
+        let returnHour = parseInt(data.return_hour, 10);
+        if (data.return_ampm === 'PM' && returnHour < 12) returnHour += 12;
+        if (data.return_ampm === 'AM' && returnHour === 12) returnHour = 0;
+
+        // Pad minute to 2 digits
+        const returnMinute = data.return_minute.toString().padStart(2, '0');
+        data.expected_return_time = `${returnHour.toString().padStart(2, '0')}:${returnMinute}:00`;
+    } else {
+        data.expected_return_time = "23:59:00";
+    }
 
     // Remove temporary individual fields from payload
     delete data.outpass_type;
