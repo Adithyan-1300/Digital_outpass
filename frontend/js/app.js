@@ -643,6 +643,9 @@ function showQRModal(qrCode, qrBase64) {
             <button onclick="printQR()" class="btn-modern btn-modern-primary" style="width: auto; border-radius: 2rem;">
                 <i class="ph ph-printer"></i> Print Outpass
             </button>
+            <button onclick="document.getElementById('qrModal').classList.remove('show')" class="btn-modern" style="width: auto; border-radius: 2rem; background: #f1f5f9; color: var(--text-main);">
+                <i class="ph ph-x"></i> Close
+            </button>
         </div>
     `;
 

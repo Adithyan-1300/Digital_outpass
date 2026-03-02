@@ -319,6 +319,7 @@ async function loadStudentsOut() {
                 </div>
                 
                 <div class="table-wrapper">
+                    <div class="table-responsive">
                     <table class="modern-table">
                         <thead>
                             <tr>
@@ -347,10 +348,13 @@ async function loadStudentsOut() {
                             <td>${app.formatDateTime(student.actual_exit_time)}</td>
                             <td style="color: var(--warning); font-weight: 500;">${student.expected_return_time === '23:59:00' ? 'Not Returning Today' : app.formatTime(student.expected_return_time)}</td>
                             <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${student.reason || '-'}</td>
-                            <td>
+                             <td>
                                 <div style="display: flex; justify-content: flex-end;">
-                                    <button onclick="recordEntryManual(${student.outpass_id})" 
-                                            class="btn-modern" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">Entry</button>
+                                    ${student.expected_return_time === '23:59:00' ?
+                            `<span style="color: var(--text-muted); font-size: 11px; font-weight: 600;">NO ENTRY REQUIRED</span>` :
+                            `<button onclick="recordEntryManual(${student.outpass_id})" 
+                                                class="btn-modern" style="background: rgba(16, 185, 129, 0.1); color: var(--success); width: auto; padding: 6px 16px;">Entry</button>`
+                        }
                                 </div>
                             </td>
                         </tr>
@@ -402,6 +406,7 @@ async function loadRecentActivity() {
                 </div>
                 
                 <div class="table-wrapper">
+                    <div class="table-responsive">
                     <table class="modern-table">
                         <thead>
                             <tr>

@@ -81,6 +81,7 @@ async function loadHODApprovals() {
                 </div>
                 
                 <div class="table-wrapper" style="box-shadow: var(--shadow-lg);">
+                    <div class="table-responsive">
                     <table class="modern-table">
                         <thead>
                             <tr>
