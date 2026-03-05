@@ -211,13 +211,25 @@ def register():
     Student self-registration endpoint
     Handles multipart/form-data for profile photo upload
     """
+    from backend.config import allowed_image_file  # Import here to avoid circular dependency
     try:
         # Get data from multipart/form-data
         data = request.form.to_dict()
         profile_file = request.files.get('profile_image')
+        role = data.get('role', 'student')
+
+        # Strict ID Card validation for students
+        if role == 'student':
+            if not profile_file or profile_file.filename == '':
+                return jsonify({'success': False, 'message': 'Institutional ID Card photo is mandatory for students'}), 400
+            
+            if not allowed_image_file(profile_file.filename):
+                return jsonify({'success': False, 'message': 'Only image files (JPG, PNG) are allowed for Student ID Cards'}), 400
+            
+            if not data.get('id_confirm'):
+                return jsonify({'success': False, 'message': 'Please confirm that you have uploaded your official ID card'}), 400
         
         # Validate required fields based on role
-        role = data.get('role', 'student')
         required_fields = ['username', 'password', 'full_name', 'phone']
         
         # Email and Dept are required for all but Security/Admin
