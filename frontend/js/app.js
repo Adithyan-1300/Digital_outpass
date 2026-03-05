@@ -66,6 +66,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const regHeroText = document.getElementById('regHeroText');
                 const profileLabel = document.getElementById('profile_label');
                 const profileHint = document.getElementById('profile_hint');
+                const deptGroup = document.getElementById('deptGroup');
+                const emailGroup = document.getElementById('emailGroup');
+                const regEmail = document.getElementById('regEmail');
+                const regDept = document.getElementById('regDept');
 
                 const roleLabels = {
                     'student': 'Student',
