@@ -54,12 +54,11 @@ def get_pending_requests():
             req['out_time'] = format_time(req['out_time'])
             req['expected_return_time'] = format_time(req['expected_return_time'])
             req['created_at'] = format_datetime(req['created_at'])
-            # Normalize profile image path to a proper URL
+            # Normalize profile image path
             if req.get('profile_image'):
                 img = req['profile_image']
-                if not img.startswith('/uploads/'):
-                    img = img.replace('uploads/', '', 1)
-                    req['profile_image'] = f'/uploads/{img}'
+                # Ensure we only have the relative path from 'uploads/'
+                req['profile_image'] = img.replace('uploads/', '', 1).lstrip('/')
             else:
                 req['profile_image'] = None
 

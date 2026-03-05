@@ -64,11 +64,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 const parentMobileGroup = document.getElementById('parentMobileGroup');
                 const parentMobileInput = document.getElementById('parentMobileInput');
                 const regHeroText = document.getElementById('regHeroText');
-                const regPhotoLabel = document.getElementById('regPhotoLabel');
-                const deptGroup = document.getElementById('deptGroup');
-                const emailGroup = document.getElementById('emailGroup');
-                const regEmail = document.getElementById('regEmail');
-                const regDept = document.getElementById('regDept');
+                const profileLabel = document.getElementById('profile_label');
+                const profileHint = document.getElementById('profile_hint');
 
                 const roleLabels = {
                     'student': 'Student',
@@ -77,10 +74,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     'security': 'Security',
                     'admin': 'Admin'
                 };
-
                 const currentLabel = roleLabels[role] || 'User';
 
-                if (regPhotoLabel) regPhotoLabel.textContent = `${currentLabel} Photo`;
+                if (role === 'student') {
+                    if (profileLabel) profileLabel.textContent = 'Student ID Card Photo';
+                    if (profileHint) profileHint.textContent = 'Please upload a clear image of your official college ID card.';
+                } else {
+                    if (profileLabel) profileLabel.textContent = `${currentLabel} Photo`;
+                    if (profileHint) profileHint.textContent = 'Image format: JPG, PNG. Max size: 2MB.';
+                }
+
                 if (regHeroText) regHeroText.textContent = `Register your ${role} profile to access institutional portal services.`;
 
                 // Reset visibility

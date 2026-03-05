@@ -63,6 +63,12 @@ def login():
         session['dept_id'] = user['dept_id']
         session['email'] = user['email']
         
+        # Clean profile image path
+        profile_img = user.get('profile_image')
+        if profile_img:
+            profile_img = profile_img.replace('uploads/', '', 1).lstrip('/')
+        session['profile_image'] = profile_img
+        
         # Get advisor name for students
         advisor_name = None
         if user['role'] == 'student' and user['advisor_id']:
