@@ -114,10 +114,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (parentNameInput) parentNameInput.required = true;
                     if (parentMobileInput) parentMobileInput.required = true;
 
-                    const idConfirmGroup = document.getElementById('id_confirmation_group');
-                    if (idConfirmGroup) idConfirmGroup.style.display = 'flex';
-                    const idConfirmInput = document.getElementById('reg_id_confirm');
-                    if (idConfirmInput) idConfirmInput.required = true;
                     const profileImgInput = document.getElementById('reg_profile_image');
                     if (profileImgInput) profileImgInput.required = true;
                 } else {
@@ -128,10 +124,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (parentNameInput) parentNameInput.required = false;
                     if (parentMobileInput) parentMobileInput.required = false;
 
-                    const idConfirmGroup = document.getElementById('id_confirmation_group');
-                    if (idConfirmGroup) idConfirmGroup.style.display = 'none';
-                    const idConfirmInput = document.getElementById('reg_id_confirm');
-                    if (idConfirmInput) idConfirmInput.required = false;
                     const profileImgInput = document.getElementById('reg_profile_image');
                     if (profileImgInput) profileImgInput.required = false;
                 }
@@ -346,15 +338,9 @@ async function handleRegister(e) {
 
     if (role === 'student') {
         const profileImg = formData.get('profile_image');
-        const idConfirm = formData.get('id_confirm');
 
         if (!profileImg || profileImg.size === 0) {
             showError(errorEl, 'Institutional ID Card photo is mandatory for students');
-            return;
-        }
-
-        if (!idConfirm) {
-            showError(errorEl, 'Please confirm that you have uploaded your official ID card');
             return;
         }
     }

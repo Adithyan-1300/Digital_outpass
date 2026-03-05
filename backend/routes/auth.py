@@ -182,6 +182,34 @@ def logout():
         print(f"Logout error: {e}")
         return jsonify({'success': False, 'message': 'Error during logout'}), 500
 
+def analyze_id_card(image_file):
+    """
+    Analyzes the uploaded image to ensure it's a valid, readable photo.
+    Heuristic-based check to replace manual confirmation.
+    """
+    try:
+        from PIL import Image
+        import io
+        
+        # Read the file into memory to avoid closing the stream
+        img_data = image_file.read()
+        image_file.seek(0) # Reset pointer for later saving
+        
+        img = Image.open(io.BytesIO(img_data))
+        img.verify() # Basic format verification
+        
+        # Detailed check
+        img = Image.open(io.BytesIO(img_data))
+        width, height = img.size
+        
+        # Requirement: At least 300x200 for legibility
+        if width < 300 or height < 200:
+            return False, "Image resolution too low for validation. Please upload a clearer ID card photo."
+            
+        return True, None
+    except Exception as e:
+        return False, f"Automated verification failed: Invalid image format ({str(e)})"
+
 @auth_bp.route('/departments', methods=['GET'])
 def get_departments():
     """Fetch all departments for the registration dropdown"""
@@ -226,8 +254,10 @@ def register():
             if not allowed_image_file(profile_file.filename):
                 return jsonify({'success': False, 'message': 'Only image files (JPG, PNG) are allowed for Student ID Cards'}), 400
             
-            if not data.get('id_confirm'):
-                return jsonify({'success': False, 'message': 'Please confirm that you have uploaded your official ID card'}), 400
+            # Automated Analysis
+            is_valid_id, error_msg = analyze_id_card(profile_file)
+            if not is_valid_id:
+                return jsonify({'success': False, 'message': error_msg}), 400
         
         # Validate required fields based on role
         required_fields = ['username', 'password', 'full_name', 'phone']
