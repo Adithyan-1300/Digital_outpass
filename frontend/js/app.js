@@ -6,6 +6,10 @@ const API_BASE = '/api';
 // Current user data
 let currentUser = null;
 
+// Camera state
+let cameraStream = null;
+let capturedPhotoBlob = null;
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', function () {
     // Check if user is already logged in
@@ -173,7 +177,103 @@ document.addEventListener('DOMContentLoaded', function () {
             sidebarNav.classList.remove('show');
         }
     });
+
+    // Camera Integration Listeners
+    const openCamBtn = document.getElementById('openCameraButton');
+    if (openCamBtn) openCamBtn.addEventListener('click', launchCamera);
+
+    const closeCamBtn = document.getElementById('closeCameraModal');
+    if (closeCamBtn) closeCamBtn.addEventListener('click', closeCamera);
+
+    const captureBtn = document.getElementById('capturePhotoBtn');
+    if (captureBtn) captureBtn.addEventListener('click', takeIDPhoto);
+
+    const removePhotoBtn = document.getElementById('removeCapturedPhoto');
+    if (removePhotoBtn) removePhotoBtn.addEventListener('click', removeCapturedPhoto);
+
+    const regProfileImgInput = document.getElementById('reg_profile_image');
+    if (regProfileImgInput) {
+        regProfileImgInput.addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+                removeCapturedPhoto();
+            }
+        });
+    }
 });
+
+// Camera System Functions
+async function launchCamera() {
+    const video = document.getElementById('cameraVideo');
+    const modal = document.getElementById('cameraModal');
+    const status = document.getElementById('cameraStatus');
+    
+    if (status) status.style.display = 'flex';
+    if (modal) modal.classList.add('show');
+    
+    try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { 
+                facingMode: 'environment', // Environmental camera for capturing ID cards
+                width: { ideal: 1280 }, 
+                height: { ideal: 720 } 
+            } 
+        });
+        if (video) video.srcObject = cameraStream;
+        if (status) status.style.display = 'none';
+    } catch (err) {
+        console.error('Camera Access Error:', err);
+        alert('Could not access camera. Please grant permissions or use a modern browser.');
+        closeCamera();
+    }
+}
+
+function stopCamera() {
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+    }
+    const video = document.getElementById('cameraVideo');
+    if (video) video.srcObject = null;
+}
+
+function closeCamera() {
+    stopCamera();
+    const modal = document.getElementById('cameraModal');
+    if (modal) modal.classList.remove('show');
+}
+
+function takeIDPhoto() {
+    const video = document.getElementById('cameraVideo');
+    if (!video || !video.videoWidth) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0);
+
+    canvas.toBlob((blob) => {
+        capturedPhotoBlob = blob;
+        const url = URL.createObjectURL(blob);
+        const preview = document.getElementById('capturedImagePreview');
+        const container = document.getElementById('capturePreviewContainer');
+        const fileInput = document.getElementById('reg_profile_image');
+        
+        if (preview) preview.src = url;
+        if (container) container.style.display = 'block';
+        if (fileInput) fileInput.value = ''; 
+        
+        closeCamera();
+    }, 'image/jpeg', 0.9);
+}
+
+function removeCapturedPhoto() {
+    capturedPhotoBlob = null;
+    const container = document.getElementById('capturePreviewContainer');
+    const preview = document.getElementById('capturedImagePreview');
+    if (container) container.style.display = 'none';
+    if (preview) preview.src = '';
+}
 
 // Hide the loading splash
 function hideSplash() {
@@ -337,7 +437,12 @@ async function handleRegister(e) {
     }
 
     if (role === 'student') {
-        const profileImg = formData.get('profile_image');
+        let profileImg = formData.get('profile_image');
+
+        if (capturedPhotoBlob) {
+            profileImg = new File([capturedPhotoBlob], 'captured_id.jpg', { type: 'image/jpeg' });
+            formData.set('profile_image', profileImg);
+        }
 
         if (!profileImg || profileImg.size === 0) {
             showError(errorEl, 'Institutional ID Card photo is mandatory for students');
@@ -586,6 +691,7 @@ function showLoginPage() {
     document.getElementById('loginForm').reset();
     hideError(document.getElementById('loginError'));
     hideSuccess(document.getElementById('loginSuccess'));
+    removeCapturedPhoto();
 }
 
 function showRegisterPage() {
@@ -594,6 +700,7 @@ function showRegisterPage() {
     document.getElementById('registerForm').reset();
     hideError(document.getElementById('registerError'));
     hideSuccess(document.getElementById('registerSuccess'));
+    removeCapturedPhoto();
 }
 
 function showError(element, message) {

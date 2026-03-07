@@ -207,9 +207,22 @@
                             <label for="reg_profile_image" id="profile_label"
                                 style="font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: block;">Student
                                 ID Card Photo</label>
-                            <input type="file" name="profile_image" id="reg_profile_image" accept="image/*"
-                                class="form-control"
-                                style="padding: 12px; border-radius: 12px; border: 1.5px dashed #e2e8f0; background: #f8fafc; width: 100%; cursor: pointer;">
+                            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                <input type="file" name="profile_image" id="reg_profile_image" accept="image/*"
+                                    class="form-control"
+                                    style="padding: 12px; border-radius: 12px; border: 1.5px dashed #e2e8f0; background: #f8fafc; flex: 1; cursor: pointer;">
+                                <button type="button" id="openCameraButton" class="btn-modern" title="Take from Camera"
+                                    style="width: auto; padding: 12px; border-radius: 12px; background: #f1f5f9; color: var(--primary); border: 1px solid #e2e8f0;">
+                                    <i class="ph ph-camera" style="font-size: 20px;"></i>
+                                </button>
+                            </div>
+                            <div id="capturePreviewContainer" style="display: none; margin-bottom: 15px; position: relative;">
+                                <img id="capturedImagePreview" alt="Capture Preview" style="width: 100%; border-radius: 16px; border: 2px solid var(--primary); box-shadow: var(--shadow-md);">
+                                <button type="button" id="removeCapturedPhoto" 
+                                    style="position: absolute; top: 10px; right: 10px; background: rgba(239, 68, 68, 0.9); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm);">
+                                    <i class="ph ph-x"></i>
+                                </button>
+                            </div>
                             <p id="profile_hint"
                                 style="font-size: 11px; color: var(--text-muted); margin-top: 0.5rem; font-weight: 500;">
                                 Please upload a clear image of your official college ID card.</p>
@@ -380,6 +393,29 @@
                     <div class="loading">Initializing system secure context...</div>
                 </div>
             </main>
+        </div>
+    </div>
+
+    <!-- Camera Capture Modal -->
+    <div id="cameraModal" class="modal">
+        <div class="modal-content glass-panel" style="max-width: 600px; padding: 24px;">
+            <span class="close" id="closeCameraModal">&times;</span>
+            <div class="text-center mb-4">
+                <h2 style="font-size: 22px; font-weight: 800; color: var(--text-main); margin-bottom: 4px;">Capture ID Photo</h2>
+                <p style="color: var(--text-muted); font-size: 13px;">Align your ID card within the frame</p>
+            </div>
+            <div style="position: relative; overflow: hidden; border-radius: 20px; background: #000; aspect-ratio: 4/3; margin-bottom: 20px; box-shadow: var(--shadow-lg);">
+                <video id="cameraVideo" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+                <div style="position: absolute; inset: 0; border: 2px dashed rgba(255,255,255,0.4); margin: 25px; border-radius: 12px; pointer-events: none;"></div>
+                <div id="cameraStatus" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); color: white; border-radius: 20px; z-index: 10; display: none;">
+                    <i class="ph ph-circle-notch ph-spin" style="font-size: 32px;"></i>
+                </div>
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button type="button" id="capturePhotoBtn" class="btn-modern btn-modern-primary" style="height: 64px; width: 64px; border-radius: 50%; padding: 0; box-shadow: 0 8px 16px rgba(5, 150, 105, 0.3);">
+                    <i class="ph ph-camera-plus" style="font-size: 28px;"></i>
+                </button>
+            </div>
         </div>
     </div>
 
