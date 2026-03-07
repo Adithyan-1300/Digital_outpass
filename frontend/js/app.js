@@ -164,11 +164,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Modal close
-    const modal = document.getElementById('qrModal');
-    const closeBtn = modal.querySelector('.close');
-    closeBtn.onclick = () => modal.classList.remove('show');
+    const qrModal = document.getElementById('qrModal');
+    if (qrModal) {
+        const closeBtn = qrModal.querySelector('.close');
+        if (closeBtn) closeBtn.onclick = () => qrModal.classList.remove('show');
+    }
     window.onclick = (e) => {
-        if (e.target == modal) modal.classList.remove('show');
+        if (qrModal && e.target == qrModal) qrModal.classList.remove('show');
     };
 
     // Close mobile menu when nav link clicked
@@ -199,6 +201,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+    // Global Error Guard (Safety)
+    window.addEventListener('error', function() {
+        hideSplash();
+    });
 });
 
 // Camera System Functions
