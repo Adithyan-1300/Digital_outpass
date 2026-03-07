@@ -14,7 +14,12 @@ let capturedPhotoBlob = null;
 document.addEventListener('DOMContentLoaded', function () {
     // Check if user is already logged in
     checkSession();
-    // showLoginPage();
+    
+    // Fail-safe: Always hide splash after 12 seconds if it hasn't been hidden yet
+    // This ensures users can access the login page even if the server is extremely slow (Render cold start)
+    setTimeout(() => {
+        hideSplash();
+    }, 12000);
 
     // Event listeners
     const listeners = [
@@ -285,9 +290,12 @@ function removeCapturedPhoto() {
 // Hide the loading splash
 function hideSplash() {
     const splash = document.getElementById('appLoadingSplash');
-    if (splash) {
+    if (splash && !splash.classList.contains('hidden')) {
         splash.classList.add('hidden');
-        setTimeout(() => { splash.style.display = 'none'; }, 500);
+        // Delay the actual removal to allow for transition
+        setTimeout(() => { 
+            if (splash) splash.style.display = 'none'; 
+        }, 600);
     }
 }
 
@@ -297,16 +305,18 @@ function setSplashStatus(text) {
     if (el) el.textContent = text;
 }
 
-// Check if user session exists
+// Check if user is already logged in
 async function checkSession() {
     try {
-        setSplashStatus('Waking up server...');
+        setSplashStatus('Establishing connection...');
         // 15-second timeout handles Render free-tier cold starts
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000);
 
         const response = await fetch(`${API_BASE}/auth/session`, { signal: controller.signal });
         clearTimeout(timeoutId);
+        
+        setSplashStatus('Synchronizing workspace...');
         const data = await response.json();
 
         if (data.logged_in) {
