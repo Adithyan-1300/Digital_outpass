@@ -1,38 +1,14 @@
 // Smart Outpass Management System - Main App JavaScript
 
-// API Base URL
 // Global app configuration and utilities
-window.app = {
+var app = window.app = {
     API_BASE: '/api',
     currentUser: () => currentUser,
-    formatDate: function(dateString) {
-        if (!dateString) return '-';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-IN');
-    },
-    formatDateTime: function(dateString) {
-        if (!dateString) return '-';
-        const date = new Date(dateString);
-        return date.toLocaleString('en-IN');
-    },
-    formatTime: function(timeString) {
-        if (!timeString) return '-';
-        const date = new Date('2000-01-01T' + timeString);
-        return date.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true });
-    },
-    getStatusBadge: function(status) {
-        if (!status) return '';
-        const badges = {
-            'pending': 'badge-pending',
-            'approved': 'badge-approved',
-            'rejected': 'badge-rejected',
-            'used': 'badge-used',
-            'cancelled': 'badge-rejected',
-            'expired': 'badge-rejected'
-        };
-        const badgeClass = badges[status.toLowerCase()] || '';
-        return `<span class="status-badge ${badgeClass}">${status.toUpperCase()}</span>`;
-    }
+    formatDate: formatDate,
+    formatDateTime: formatDateTime,
+    formatTime: formatTime,
+    getStatusBadge: getStatusBadge,
+    showQRModal: showQRModal
 };
 
 // Current user data
@@ -42,32 +18,38 @@ let currentUser = null;
 let cameraStream = null;
 let capturedPhotoBlob = null;
 
+// Immediate fail-safe: Hide splash if something goes catastrophically wrong with script execution
+setTimeout(() => {
+    if (typeof hideSplash === 'function') hideSplash();
+}, 12000);
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', function () {
-    // Check if user is already logged in
-    checkSession();
+    console.log('DOM Content Loaded - Initializing App');
     
-    // Fail-safe: Always hide splash after 12 seconds if it hasn't been hidden yet
-    // This ensures users can access the login page even if the server is extremely slow (Render cold start)
-    setTimeout(() => {
-        hideSplash();
-    }, 12000);
+    try {
+        // Check if user is already logged in
+        checkSession();
 
-    // Event listeners
-    const listeners = [
-        { id: 'loginForm', event: 'submit', handler: handleLogin },
-        { id: 'logoutBtn', event: 'click', handler: handleLogout },
-        { id: 'showRegister', event: 'click', handler: showRegisterPage },
-        { id: 'showLoginTop', event: 'click', handler: showLoginPage },
-        { id: 'registerForm', event: 'submit', handler: handleRegister }
-    ];
+        // Event listeners
+        const listeners = [
+            { id: 'loginForm', event: 'submit', handler: handleLogin },
+            { id: 'logoutBtn', event: 'click', handler: handleLogout },
+            { id: 'showRegister', event: 'click', handler: showRegisterPage },
+            { id: 'showLoginTop', event: 'click', handler: showLoginPage },
+            { id: 'registerForm', event: 'submit', handler: handleRegister }
+        ];
 
-    listeners.forEach(l => {
-        const el = document.getElementById(l.id);
-        if (el) {
-            el.addEventListener(l.event, l.handler);
-        }
-    });
+        listeners.forEach(l => {
+            const el = document.getElementById(l.id);
+            if (el) {
+                el.addEventListener(l.event, l.handler);
+            }
+        });
+    } catch (err) {
+        console.error('Initialization Error:', err);
+        if (typeof hideSplash === 'function') hideSplash();
+    }
 
     // Handle password visibility toggles
     document.addEventListener('click', function (e) {
