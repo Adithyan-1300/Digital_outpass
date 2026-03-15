@@ -8,7 +8,7 @@ from backend.config import get_db_connection
 from backend.utils.helpers import (
     role_required, format_datetime, format_date, format_time,
     log_action, get_client_ip, generate_unique_qr_token, generate_qr_code,
-    send_sms_notification
+    send_sms_notification, get_ist_now
 )
 from backend.utils.pdf_generator import generate_hod_monthly_report
 from datetime import datetime, timedelta
@@ -133,7 +133,7 @@ def approve_final(outpass_id):
         
         # Generate QR code token
         qr_token = generate_unique_qr_token(outpass_id)
-        qr_expires = datetime.now() + timedelta(hours=1)  # QR valid for 1 hour
+        qr_expires = get_ist_now() + timedelta(hours=1)  # QR valid for 1 hour
         
         # Update outpass - HOD approval and generate QR
         cursor.execute("""
@@ -380,7 +380,7 @@ def override_approval(outpass_id):
         
         # Generate QR code
         qr_token = generate_unique_qr_token(outpass_id)
-        qr_expires = datetime.now() + timedelta(hours=1)  # QR valid for 1 hour
+        qr_expires = get_ist_now() + timedelta(hours=1)  # QR valid for 1 hour
         
         # Override approval
         cursor.execute("""
@@ -524,8 +524,8 @@ def download_history():
         
         # Get department name and records for current month
         # Improved query to join with users and get academic_year
-        current_year = datetime.now().year
-        current_month = datetime.now().month
+        current_year = get_ist_now().year
+        current_month = get_ist_now().month
         cursor.execute("""
             SELECT o.*, u.full_name as student_name, u.registration_no, u.academic_year, d.dept_name, a.full_name as advisor_name
             FROM outpasses o
@@ -577,7 +577,7 @@ def download_history():
         cursor.close()
         conn.close()
         
-        now = datetime.now()
+        now = get_ist_now()
         month_name = now.strftime('%B')
         year = now.strftime('%Y')
         

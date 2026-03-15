@@ -9,8 +9,11 @@ import qrcode
 import io
 import base64
 from datetime import datetime, timedelta
-from functools import wraps
 from flask import session, jsonify, request
+
+def get_ist_now():
+    """Get current time in IST (+05:30)"""
+    return datetime.utcnow() + timedelta(hours=5, minutes=30)
 
 def hash_password(password):
     """Hash password using SHA256"""
@@ -52,7 +55,7 @@ def generate_unique_qr_token(outpass_id):
     Generate unique QR code token for outpass
     Format: QR-{outpass_id}-{timestamp}-{random}
     """
-    timestamp = int(datetime.now().timestamp())
+    timestamp = int(get_ist_now().timestamp())
     random_str = secrets.token_hex(8)
     return f"QR-{outpass_id:08d}-{timestamp}-{random_str}"
 
@@ -235,7 +238,7 @@ def is_qr_valid(qr_code, qr_expires_at, is_qr_used):
     if is_qr_used:
         return False, "QR code already used"
     
-    if qr_expires_at and datetime.now() > qr_expires_at:
+    if qr_expires_at and get_ist_now() > qr_expires_at:
         return False, "QR code expired"
     
     return True, None

@@ -6,7 +6,7 @@ Handles admin operations: user management, reports, system monitoring
 from flask import Blueprint, request, jsonify, session
 from backend.config import get_db_connection
 from backend.utils.helpers import (
-    role_required, hash_password, format_datetime, format_date
+    role_required, hash_password, format_datetime, format_date, get_ist_now
 )
 from datetime import datetime, timedelta
 
@@ -561,8 +561,8 @@ def assign_advisor():
 def get_system_report():
     """Get comprehensive system statistics and report"""
     try:
-        from_date = request.args.get('from_date', (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d'))
-        to_date = request.args.get('to_date', datetime.now().strftime('%Y-%m-%d'))
+        from_date = request.args.get('from_date', (get_ist_now() - timedelta(days=30)).strftime('%Y-%m-%d'))
+        to_date = request.args.get('to_date', get_ist_now().strftime('%Y-%m-%d'))
         
         conn = get_db_connection()
         if not conn:
@@ -653,8 +653,8 @@ def get_system_report():
 def export_report():
     """Export system report as CSV"""
     try:
-        from_date = request.args.get('from_date', (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d'))
-        to_date = request.args.get('to_date', datetime.now().strftime('%Y-%m-%d'))
+        from_date = request.args.get('from_date', (get_ist_now() - timedelta(days=30)).strftime('%Y-%m-%d'))
+        to_date = request.args.get('to_date', get_ist_now().strftime('%Y-%m-%d'))
         
         conn = get_db_connection()
         if not conn:

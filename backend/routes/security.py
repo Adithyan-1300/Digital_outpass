@@ -7,7 +7,7 @@ from flask import Blueprint, request, jsonify, session
 from backend.config import get_db_connection
 from backend.utils.helpers import (
     role_required, format_datetime, format_date, format_time,
-    log_action, get_client_ip, is_qr_valid
+    log_action, get_client_ip, is_qr_valid, get_ist_now
 )
 from datetime import datetime, timedelta
 
@@ -91,7 +91,7 @@ def scan_qr():
         if isinstance(outpass_date, str):
             outpass_date = datetime.strptime(outpass_date, '%Y-%m-%d').date()
         
-        if outpass_date > datetime.now().date():
+        if outpass_date > get_ist_now().date():
             cursor.close()
             conn.close()
             return jsonify({
@@ -381,7 +381,7 @@ def get_students_currently_out():
         students = cursor.fetchall()
         
         # Format datetime and check for late status
-        now_time = datetime.now()
+        now_time = get_ist_now()
         for student in students:
             # Check if late: NOW > expected_return_time on the same day OR out_date < today
             is_late = False

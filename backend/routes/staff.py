@@ -7,7 +7,7 @@ from flask import Blueprint, request, jsonify, session
 from backend.config import get_db_connection
 from backend.utils.helpers import (
     role_required, format_datetime, format_date, format_time,
-    log_action, get_client_ip, generate_unique_qr_token, generate_qr_code
+    log_action, get_client_ip, generate_unique_qr_token, generate_qr_code, get_ist_now
 )
 from backend.utils.pdf_generator import generate_staff_monthly_report
 from datetime import datetime, timedelta
@@ -427,7 +427,7 @@ def download_history():
         cursor.close()
         conn.close()
         
-        now = datetime.now()
+        now = get_ist_now()
         month_name = now.strftime('%B')
         year = now.strftime('%Y')
         

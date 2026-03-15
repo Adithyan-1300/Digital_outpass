@@ -40,7 +40,7 @@ def get_db_connection():
         except (ValueError, TypeError):
             db_port = 3306
 
-        return mysql.connector.connect(
+        conn = mysql.connector.connect(
             host=db_host,
             user=db_user,
             password=db_password,
@@ -50,6 +50,13 @@ def get_db_connection():
             autocommit=True,
             connection_timeout=10
         )
+        
+        # Set session timezone to IST (+05:30)
+        cursor = conn.cursor()
+        cursor.execute("SET time_zone = '+05:30'")
+        cursor.close()
+        
+        return conn
     except Exception as e:
         print(f"[ERROR] Database connection failed: {e}")
         return None

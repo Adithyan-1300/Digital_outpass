@@ -1,6 +1,7 @@
 import os
 from fpdf import FPDF
 from datetime import datetime, timedelta
+from backend.utils.helpers import get_ist_now
 
 class OutpassPDF(FPDF):
     def header(self):
@@ -10,7 +11,7 @@ class OutpassPDF(FPDF):
         self.cell(0, 10, 'SMART OUTPASS SYSTEM', ln=True, align='C')
         self.set_font('helvetica', '', 10)
         self.set_text_color(100, 116, 139) # Text muted
-        self.cell(0, 10, f'Generated on: {datetime.now().strftime("%d %b %Y, %I:%M %p")}', ln=True, align='C')
+        self.cell(0, 10, f'Generated on: {get_ist_now().strftime("%d %b %Y, %I:%M %p")}', ln=True, align='C')
         self.ln(10)
 
     def footer(self):
