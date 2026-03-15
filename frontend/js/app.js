@@ -1,7 +1,38 @@
 // Smart Outpass Management System - Main App JavaScript
 
 // API Base URL
-const API_BASE = '/api';
+// Global app configuration and utilities
+window.app = {
+    API_BASE: '/api',
+    formatDate: function(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-IN');
+    },
+    formatDateTime: function(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleString('en-IN');
+    },
+    formatTime: function(timeString) {
+        if (!timeString) return '-';
+        const date = new Date('2000-01-01T' + timeString);
+        return date.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true });
+    },
+    getStatusBadge: function(status) {
+        if (!status) return '';
+        const badges = {
+            'pending': 'badge-pending',
+            'approved': 'badge-approved',
+            'rejected': 'badge-rejected',
+            'used': 'badge-used',
+            'cancelled': 'badge-rejected',
+            'expired': 'badge-rejected'
+        };
+        const badgeClass = badges[status.toLowerCase()] || '';
+        return `<span class="status-badge ${badgeClass}">${status.toUpperCase()}</span>`;
+    }
+};
 
 // Current user data
 let currentUser = null;
@@ -319,7 +350,7 @@ async function checkSession() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-        const response = await fetch(`${API_BASE}/auth/session`, { signal: controller.signal });
+        const response = await fetch(`${app.API_BASE}/auth/session`, { signal: controller.signal });
         clearTimeout(timeoutId);
         
         setSplashStatus('Synchronizing workspace...');
@@ -360,7 +391,7 @@ async function handleLogin(e) {
     loginBtn.innerHTML = '<i class="ph ph-circle-notch ph-spin"></i> Processing...';
 
     try {
-        const response = await fetch(`${API_BASE}/auth/login`, {
+        const response = await fetch(`${app.API_BASE}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
@@ -393,7 +424,7 @@ async function handleLogout(e) {
     e.preventDefault();
 
     try {
-        await fetch(`${API_BASE}/auth/logout`, { method: 'POST' });
+        await fetch(`${app.API_BASE}/auth/logout`, { method: 'POST' });
         currentUser = null;
         localStorage.removeItem('currentModule');
         showLoginPage();
@@ -483,7 +514,7 @@ async function handleRegister(e) {
     regBtn.innerHTML = '<i class="ph ph-circle-notch ph-spin"></i> Creating Profile...';
 
     try {
-        const response = await fetch(`${API_BASE}/auth/register`, {
+        const response = await fetch(`${app.API_BASE}/auth/register`, {
             method: 'POST',
             body: formData
         });
@@ -515,7 +546,7 @@ async function handleRegister(e) {
 // Load departments for registration
 async function loadDepartments() {
     try {
-        const response = await fetch(`${API_BASE}/admin/departments`);
+        const response = await fetch(`${app.API_BASE}/admin/departments`);
         const data = await response.json();
 
         if (data.success) {
