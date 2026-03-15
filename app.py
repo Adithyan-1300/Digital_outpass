@@ -21,6 +21,10 @@ app.register_blueprint(hod_bp)
 app.register_blueprint(security_bp)
 app.register_blueprint(admin_bp)
 
+# Initialize database on startup
+with app.app_context():
+    init_db()
+
 # Manual Database Initialization Route (Use only if needed)
 @app.route('/api/admin/init-db', methods=['POST'])
 def manual_init_db():

@@ -90,6 +90,7 @@ def login():
             'dept_name': user.get('dept_name'),
             'dept_code': user.get('dept_code'),
             'registration_no': user.get('registration_no'),
+            'academic_year': user.get('academic_year'),
             'phone': user.get('phone'),
             'parent_name': user.get('parent_name'),
             'parent_mobile': user.get('parent_mobile'),

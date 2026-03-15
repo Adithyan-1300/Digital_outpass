@@ -85,6 +85,15 @@ def init_db():
                         else:
                             print(f"[WARN] Schema statement failed: {err.msg}")
             print("[OK] Database schema verified/initialized")
+
+        # Migration: Add academic_year to users if missing
+        try:
+            cursor.execute("SHOW COLUMNS FROM users LIKE 'academic_year'")
+            if not cursor.fetchone():
+                cursor.execute("ALTER TABLE users ADD COLUMN academic_year INT AFTER registration_no")
+                print("[OK] Migration: Added academic_year column to users table")
+        except Exception as mig_err:
+            print(f"[WARN] academic_year migration skipped: {mig_err}")
         
         # Execute Sample Data Only if no users exist (to prevent duplicates on every restart)
         try:
