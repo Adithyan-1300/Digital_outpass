@@ -94,6 +94,18 @@ def init_db():
                 print("[OK] Migration: Added academic_year column to users table")
         except Exception as mig_err:
             print(f"[WARN] academic_year migration skipped: {mig_err}")
+
+        # Migration: Add movement logs to outpasses if missing
+        try:
+            cursor.execute("SHOW COLUMNS FROM outpasses LIKE 'actual_exit_time'")
+            if not cursor.fetchone():
+                cursor.execute("ALTER TABLE outpasses ADD COLUMN actual_exit_time TIMESTAMP NULL AFTER is_qr_used")
+                cursor.execute("ALTER TABLE outpasses ADD COLUMN actual_entry_time TIMESTAMP NULL AFTER actual_exit_time")
+                cursor.execute("ALTER TABLE outpasses ADD COLUMN exit_security_id INT AFTER actual_entry_time")
+                cursor.execute("ALTER TABLE outpasses ADD COLUMN entry_security_id INT AFTER exit_security_id")
+                print("[OK] Migration: Added movement columns to outpasses table")
+        except Exception as mig_err:
+            print(f"[WARN] outpasses movement migration skipped: {mig_err}")
         
         # Execute Sample Data Only if no users exist (to prevent duplicates on every restart)
         try:
