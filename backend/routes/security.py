@@ -385,6 +385,8 @@ def get_students_currently_out():
         for student in students:
             # Check if late: NOW > expected_return_time on the same day OR out_date < today
             is_late = False
+            out_date = student['out_date']
+            exp_return = student['expected_return_time']
             # Ensure out_date is a date object
             if isinstance(out_date, str):
                 try:
