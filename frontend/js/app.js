@@ -4,6 +4,7 @@
 // Global app configuration and utilities
 window.app = {
     API_BASE: '/api',
+    currentUser: () => currentUser,
     formatDate: function(dateString) {
         if (!dateString) return '-';
         const date = new Date(dateString);
@@ -841,14 +842,4 @@ function printQR() {
 
 // Global exposure for onclick handlers
 window.printQR = printQR;
-
-// Export for use in other modules
-window.app = {
-    currentUser: () => currentUser,
-    API_BASE,
-    formatDate,
-    formatDateTime,
-    formatTime,
-    getStatusBadge,
-    showQRModal
-};
+window.printHistory = () => { window.print(); };
