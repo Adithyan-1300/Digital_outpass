@@ -7,7 +7,7 @@ from flask import Blueprint, request, jsonify, session
 from backend.config import get_db_connection
 from backend.utils.helpers import (
     role_required, format_datetime, format_date, format_time,
-    log_action, get_client_ip, is_qr_valid, get_ist_now
+    log_action, get_client_ip, is_qr_valid, get_ist_now, check_is_late
 )
 from datetime import datetime, timedelta
 
@@ -271,25 +271,30 @@ def record_entry():
             return jsonify({'success': False, 'message': 'Entry already recorded'}), 400
         
         # Record entry
+        entry_time = get_ist_now()
+        is_late = check_is_late(outpass['out_date'], outpass['expected_return_time'], entry_time)
+        
         cursor.execute("""
             UPDATE outpasses 
-            SET actual_entry_time = NOW(),
+            SET actual_entry_time = %s,
                 entry_security_id = %s
             WHERE outpass_id = %s
-        """, (session['user_id'], outpass['outpass_id']))
+        """, (entry_time, session['user_id'], outpass['outpass_id']))
         
         conn.commit()
         
         # Log action
+        log_msg = 'Student returned' + (' (LATE) ⏰' if is_late else '')
         log_action(conn, outpass['outpass_id'], session['user_id'], 'entry_scanned',
-                  'Student returned', get_client_ip())
+                  log_msg, get_client_ip())
         
         cursor.close()
         conn.close()
         
         return jsonify({
             'success': True,
-            'message': 'Entry recorded successfully'
+            'message': 'Entry recorded successfully' + (' (LATE) ⏰' if is_late else ''),
+            'is_late': is_late
         }), 200
         
     except Exception as e:

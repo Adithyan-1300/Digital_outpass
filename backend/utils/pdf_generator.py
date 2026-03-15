@@ -1,7 +1,7 @@
 import os
 from fpdf import FPDF
 from datetime import datetime, timedelta
-from backend.utils.helpers import get_ist_now
+from backend.utils.helpers import get_ist_now, check_is_late
 
 class OutpassPDF(FPDF):
     def header(self):
@@ -85,7 +85,11 @@ def generate_staff_monthly_report(staff_name, month_name, year, records):
         pdf.cell(25, 10, safe_str(row.get('out_date', '-')), border=1, align='C')
         
         pdf.cell(35, 10, fmt_t(row.get('actual_exit_time')), border=1, align='C')
-        pdf.cell(35, 10, fmt_t(row.get('actual_entry_time')), border=1, align='C')
+        # Entry Time with late indicator
+        entry_time_str = fmt_t(row.get('actual_entry_time'))
+        if row.get('actual_entry_time') and check_is_late(row.get('out_date'), row.get('expected_return_time'), row.get('actual_entry_time')):
+            entry_time_str += ' (LATE)'
+        pdf.cell(35, 10, entry_time_str, border=1, align='C')
         
         # Multiline reason
         reason = safe_str(row.get('reason', '-'))
@@ -150,7 +154,11 @@ def generate_hod_monthly_report(dept_name, month_name, year, records_by_year):
             pdf.cell(22, 8, safe_str(row.get('out_date', '-')), border=1, align='C')
             
             pdf.cell(30, 8, fmt_t(row.get('actual_exit_time')), border=1, align='C')
-            pdf.cell(30, 8, fmt_t(row.get('actual_entry_time')), border=1, align='C')
+            # Entry Time with late indicator
+            entry_time_str = fmt_t(row.get('actual_entry_time'))
+            if row.get('actual_entry_time') and check_is_late(row.get('out_date'), row.get('expected_return_time'), row.get('actual_entry_time')):
+                entry_time_str += ' (LATE)'
+            pdf.cell(30, 8, entry_time_str, border=1, align='C')
             
             reason = safe_str(row.get('reason', '-'))
             if len(reason) > 30:

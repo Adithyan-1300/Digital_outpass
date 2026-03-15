@@ -253,3 +253,49 @@ def calculate_duration(start_time, end_time):
     duration = end_time - start_time
     hours = duration.total_seconds() / 3600
     return round(hours, 2)
+
+def check_is_late(out_date, expected_return_time, actual_entry_time):
+    """
+    Check if entry is late
+    Args:
+        out_date: Date object or string
+        expected_return_time: Time object, timedelta, or string
+        actual_entry_time: Datetime object
+    Returns:
+        Boolean: True if late, False otherwise
+    """
+    if not actual_entry_time or not expected_return_time:
+        return False
+        
+    try:
+        # Normalize out_date
+        if isinstance(out_date, str):
+            out_date = datetime.strptime(out_date, '%Y-%m-%d').date()
+        elif hasattr(out_date, 'date'):
+            out_date = out_date.date()
+            
+        # Normalize expected_return_time to a datetime on out_date
+        if isinstance(expected_return_time, timedelta):
+            total_seconds = int(expected_return_time.total_seconds())
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600) // 60
+            expected_dt = datetime.combine(out_date, datetime.min.time().replace(hour=hours % 24, minute=minutes))
+        elif isinstance(expected_return_time, str):
+            # Handle HH:MM:SS or HH:MM
+            t_parts = expected_return_time.split(':')
+            h, m = int(t_parts[0]), int(t_parts[1])
+            expected_dt = datetime.combine(out_date, datetime.min.time().replace(hour=h, minute=m))
+        elif hasattr(expected_return_time, 'hour'):
+            expected_dt = datetime.combine(out_date, expected_return_time)
+        else:
+            return False
+            
+        # Special case: '23:59:00' often means "Not Returning Today" in this system
+        if expected_dt.time().hour == 23 and expected_dt.time().minute == 59:
+            return False
+            
+        return actual_entry_time > expected_dt
+        
+    except Exception as e:
+        print(f"Error checking late status: {e}")
+        return False
