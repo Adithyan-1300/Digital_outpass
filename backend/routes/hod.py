@@ -14,6 +14,7 @@ from backend.utils.pdf_generator import generate_hod_monthly_report
 from datetime import datetime, timedelta
 from flask import Response
 
+import re
 hod_bp = Blueprint('hod', __name__, url_prefix='/api/hod')
 
 @hod_bp.route('/pending-approvals', methods=['GET'])
@@ -557,12 +558,10 @@ def download_history():
             
             if not year_level:
                 # Fallback to existing logic if academic_year is missing
-                reg_no = rec.get('registration_no', '')
+                reg_no = rec.get('registration_no') or ''
                 match = re.search(r'(\d{4})', reg_no)
                 if match:
                     batch_year = int(match.group(1))
-                    # Assuming academic_start_year is defined if this fallback is used
-                    # For simplicity, let's re-calculate academic_start_year if needed
                     academic_start_year = current_year if current_month >= 7 else current_year - 1
                     calc_year = academic_start_year - batch_year + 1
                     year_level = min(max(calc_year, 1), 4) # Cap between 1 and 4
@@ -585,7 +584,7 @@ def download_history():
         pdf_bytes = generate_hod_monthly_report(dept_name, month_name, year, records_by_year)
         
         return Response(
-            pdf_bytes,
+            bytes(pdf_bytes),
             mimetype="application/pdf",
             headers={"Content-disposition": f"attachment; filename=Dept_Outpass_History_{month_name}_{year}.pdf"}
         )

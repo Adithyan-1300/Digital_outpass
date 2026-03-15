@@ -45,6 +45,7 @@ def fmt_t(t):
 
 def generate_staff_monthly_report(staff_name, month_name, year, records):
     pdf = OutpassPDF(orientation='L') # Landscape
+    pdf.set_auto_page_break(auto=True, margin=15)
     pdf.alias_nb_pages()
     pdf.add_page()
     
@@ -78,9 +79,6 @@ def generate_staff_monthly_report(staff_name, month_name, year, records):
     # Table Content
     pdf.set_font('helvetica', '', 9)
     for row in records:
-        if pdf.get_y() > 180: # Adjust for landscape
-            pdf.add_page()
-        
         pdf.cell(50, 10, safe_str(row.get('student_name', row.get('full_name', 'Unknown'))), border=1)
         pdf.cell(30, 10, safe_str(row.get('registration_no', '-')), border=1, align='C')
         pdf.cell(25, 10, safe_str(row.get('out_date', '-')), border=1, align='C')
@@ -98,10 +96,11 @@ def generate_staff_monthly_report(staff_name, month_name, year, records):
         pdf.cell(30, 10, safe_str(status).capitalize(), border=1, align='C')
         pdf.ln()
         
-    return pdf.output()
+    return bytes(pdf.output())
 
 def generate_hod_monthly_report(dept_name, month_name, year, records_by_year):
     pdf = OutpassPDF(orientation='L') # Landscape
+    pdf.set_auto_page_break(auto=True, margin=15)
     pdf.alias_nb_pages()
     pdf.add_page()
     
@@ -145,9 +144,6 @@ def generate_hod_monthly_report(dept_name, month_name, year, records_by_year):
         # Table Content
         pdf.set_font('helvetica', '', 8)
         for row in records:
-            if pdf.get_y() > 185:
-                pdf.add_page()
-            
             pdf.cell(45, 8, safe_str(row.get('student_name', row.get('full_name', 'Unknown'))), border=1)
             pdf.cell(25, 8, safe_str(row.get('registration_no', '-')), border=1, align='C')
             pdf.cell(22, 8, safe_str(row.get('out_date', '-')), border=1, align='C')
@@ -166,4 +162,4 @@ def generate_hod_monthly_report(dept_name, month_name, year, records_by_year):
         
         pdf.ln(10)
         
-    return pdf.output()
+    return bytes(pdf.output())

@@ -435,7 +435,7 @@ def download_history():
         
         # Use Response to return binary PDF
         return Response(
-            pdf_bytes,
+            bytes(pdf_bytes),
             mimetype="application/pdf",
             headers={"Content-disposition": f"attachment; filename=Outpass_History_{month_name}_{year}.pdf"}
         )
