@@ -1,6 +1,6 @@
 import os
 from fpdf import FPDF
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class OutpassPDF(FPDF):
     def header(self):
@@ -19,6 +19,30 @@ class OutpassPDF(FPDF):
         self.set_text_color(150, 150, 150)
         self.cell(0, 10, f'Page {self.page_no()} / {{nb}}', align='C')
 
+def safe_str(s):
+    """Ensure string is compatible with Latin-1 for FPDF"""
+    if s is None: return ""
+    return str(s).encode('latin-1', 'replace').decode('latin-1')
+
+def fmt_t(t):
+    """Robust time formatting for various objects"""
+    if not t: return '-'
+    if isinstance(t, str): return t
+    if isinstance(t, timedelta):
+        # Handle timedelta (MySQL TIME)
+        total_seconds = int(t.total_seconds())
+        hours = total_seconds // 3600
+        minutes = (total_seconds % 3600) // 60
+        period = "AM"
+        if hours >= 12:
+            period = "PM"
+            if hours > 12: hours -= 12
+        if hours == 0: hours = 12
+        return f"{hours:02d}:{minutes:02d} {period}"
+    if hasattr(t, 'strftime'):
+        return t.strftime('%I:%M %p')
+    return str(t)
+
 def generate_staff_monthly_report(staff_name, month_name, year, records):
     pdf = OutpassPDF(orientation='L') # Landscape
     pdf.alias_nb_pages()
@@ -30,7 +54,7 @@ def generate_staff_monthly_report(staff_name, month_name, year, records):
     pdf.cell(0, 10, f'Staff Outpass History - {month_name} {year}', ln=True)
     
     pdf.set_font('helvetica', '', 12)
-    pdf.cell(0, 10, f'Advisor: {staff_name}', ln=True)
+    pdf.cell(0, 10, f'Advisor: {safe_str(staff_name)}', ln=True)
     pdf.ln(5)
     
     # Table Header
@@ -57,30 +81,21 @@ def generate_staff_monthly_report(staff_name, month_name, year, records):
         if pdf.get_y() > 180: # Adjust for landscape
             pdf.add_page()
         
-        pdf.cell(50, 10, str(row['student_name']), border=1)
-        pdf.cell(30, 10, str(row['registration_no']), border=1, align='C')
-        pdf.cell(25, 10, str(row['out_date']), border=1, align='C')
+        pdf.cell(50, 10, safe_str(row.get('student_name', row.get('full_name', 'Unknown'))), border=1)
+        pdf.cell(30, 10, safe_str(row.get('registration_no', '-')), border=1, align='C')
+        pdf.cell(25, 10, safe_str(row.get('out_date', '-')), border=1, align='C')
         
-        # Exit/Entry times
-        exit_time = row.get('actual_exit_time')
-        entry_time = row.get('actual_entry_time')
-        
-        # Helper to format time if it's a datetime object
-        def fmt_t(t):
-            if not t: return '-'
-            if isinstance(t, str): return t
-            return t.strftime('%I:%M %p')
-
-        pdf.cell(35, 10, fmt_t(exit_time), border=1, align='C')
-        pdf.cell(35, 10, fmt_t(entry_time), border=1, align='C')
+        pdf.cell(35, 10, fmt_t(row.get('actual_exit_time')), border=1, align='C')
+        pdf.cell(35, 10, fmt_t(row.get('actual_entry_time')), border=1, align='C')
         
         # Multiline reason
-        reason = str(row['reason'])
+        reason = safe_str(row.get('reason', '-'))
         if len(reason) > 40:
             reason = reason[:37] + '...'
         pdf.cell(65, 10, reason, border=1)
         
-        pdf.cell(30, 10, str(row['final_status']).capitalize(), border=1, align='C')
+        status = row.get('final_status', 'Pending')
+        pdf.cell(30, 10, safe_str(status).capitalize(), border=1, align='C')
         pdf.ln()
         
     return pdf.output()
@@ -96,7 +111,7 @@ def generate_hod_monthly_report(dept_name, month_name, year, records_by_year):
     pdf.cell(0, 10, f'Departmental Outpass History - {month_name} {year}', ln=True)
     
     pdf.set_font('helvetica', '', 12)
-    pdf.cell(0, 10, f'Department: {dept_name}', ln=True)
+    pdf.cell(0, 10, f'Department: {safe_str(dept_name)}', ln=True)
     pdf.ln(10)
     
     for academic_year, records in records_by_year.items():
@@ -133,26 +148,20 @@ def generate_hod_monthly_report(dept_name, month_name, year, records_by_year):
             if pdf.get_y() > 185:
                 pdf.add_page()
             
-            pdf.cell(45, 8, str(row['student_name']), border=1)
-            pdf.cell(25, 8, str(row['registration_no']), border=1, align='C')
-            pdf.cell(22, 8, str(row['out_date']), border=1, align='C')
+            pdf.cell(45, 8, safe_str(row.get('student_name', row.get('full_name', 'Unknown'))), border=1)
+            pdf.cell(25, 8, safe_str(row.get('registration_no', '-')), border=1, align='C')
+            pdf.cell(22, 8, safe_str(row.get('out_date', '-')), border=1, align='C')
             
-            # Helper to format time
-            def fmt_t(t):
-                if not t: return '-'
-                if isinstance(t, str): return t
-                return t.strftime('%I:%M %p')
-
             pdf.cell(30, 8, fmt_t(row.get('actual_exit_time')), border=1, align='C')
             pdf.cell(30, 8, fmt_t(row.get('actual_entry_time')), border=1, align='C')
             
-            reason = str(row['reason'])
+            reason = safe_str(row.get('reason', '-'))
             if len(reason) > 30:
                 reason = reason[:27] + '...'
             pdf.cell(50, 8, reason, border=1)
             
-            pdf.cell(35, 8, str(row['advisor_name']) if 'advisor_name' in row else 'N/A', border=1)
-            pdf.cell(20, 8, str(row['final_status']).capitalize(), border=1, align='C')
+            pdf.cell(35, 8, safe_str(row.get('advisor_name', 'N/A')), border=1)
+            pdf.cell(20, 8, safe_str(row.get('final_status', 'Pending')).capitalize(), border=1, align='C')
             pdf.ln()
         
         pdf.ln(10)

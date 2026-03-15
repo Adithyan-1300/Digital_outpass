@@ -526,10 +526,11 @@ def download_history():
         current_year = datetime.now().year
         current_month = datetime.now().month
         cursor.execute("""
-            SELECT o.*, u.full_name, u.registration_no, u.academic_year, d.dept_name
+            SELECT o.*, u.full_name as student_name, u.registration_no, u.academic_year, d.dept_name, a.full_name as advisor_name
             FROM outpasses o
             JOIN users u ON o.student_id = u.user_id
             JOIN departments d ON u.dept_id = d.dept_id
+            LEFT JOIN users a ON o.advisor_id = a.user_id
             WHERE u.dept_id = %s 
             AND o.final_status IN ('approved', 'used')
             AND (
