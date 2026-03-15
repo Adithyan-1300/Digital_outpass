@@ -9,7 +9,7 @@ from backend.utils.helpers import (
     role_required, format_datetime, format_date, format_time,
     log_action, get_client_ip, is_qr_valid
 )
-from datetime import datetime
+from datetime import datetime, timedelta
 
 security_bp = Blueprint('security', __name__, url_prefix='/api/security')
 
@@ -385,18 +385,33 @@ def get_students_currently_out():
         for student in students:
             # Check if late: NOW > expected_return_time on the same day OR out_date < today
             is_late = False
-            out_date = student['out_date']
-            exp_return = student['expected_return_time']
-            
+            # Ensure out_date is a date object
+            if isinstance(out_date, str):
+                try:
+                    out_date = datetime.strptime(out_date, '%Y-%m-%d').date()
+                except:
+                    continue # Skip invalid dates
+
             # Convert time to datetime for comparison if needed
             if isinstance(exp_return, timedelta):
                 # MySQL TIME returns timedelta
                 total_seconds = exp_return.total_seconds()
                 hours = int(total_seconds // 3600)
                 minutes = int((total_seconds % 3600) // 60)
-                exp_datetime = datetime.combine(out_date, datetime.min.time().replace(hour=hours, minute=minutes))
-            else:
+                # Handle cases where hours might be >= 24 (though rare for time of day)
+                try:
+                    exp_datetime = datetime.combine(out_date, datetime.min.time().replace(hour=hours % 24, minute=minutes))
+                except:
+                    exp_datetime = datetime.combine(out_date, datetime.max.time())
+            elif hasattr(exp_return, 'hour'): # It's a time object
                 exp_datetime = datetime.combine(out_date, exp_return)
+            else:
+                # Fallback if it's a string or other
+                try:
+                    exp_time = datetime.strptime(str(exp_return), '%H:%M:%S').time()
+                    exp_datetime = datetime.combine(out_date, exp_time)
+                except:
+                    exp_datetime = datetime.combine(out_date, datetime.max.time())
             
             # If expected return is 23:59:00, it's usually "Not Returning Today"
             if str(exp_return) == '23:59:00':
@@ -421,7 +436,7 @@ def get_students_currently_out():
         
     except Exception as e:
         print(f"Get students out error: {e}")
-        return jsonify({'success': False, 'message': 'Failed to fetch students'}), 500
+        return jsonify({'success': False, 'message': f'Failed to fetch students: {str(e)}'}), 500
 
 @security_bp.route('/dashboard-stats', methods=['GET'])
 @role_required('security')
@@ -487,4 +502,4 @@ def get_security_stats():
         
     except Exception as e:
         print(f"Get stats error: {e}")
-        return jsonify({'success': False, 'message': 'Failed to fetch statistics'}), 500
+        return jsonify({'success': False, 'message': f'Failed to fetch statistics: {str(e)}'}), 500

@@ -376,10 +376,20 @@ async function loadStudentsOut() {
             html += `</tbody></table></div></div>`;
             document.getElementById('moduleContent').innerHTML = html;
         } else {
-            document.getElementById('moduleContent').innerHTML = `<div class="card"><p>${data.message || 'Error loading list'}</p></div>`;
+            document.getElementById('moduleContent').innerHTML = `
+                <div class="card">
+                    <p style="color: var(--danger); font-weight: 600;">Error: ${data.message || 'Failed to fetch students'}</p>
+                    <button onclick="loadModule('security-dashboard')" class="btn-modern" style="margin-top: 1rem; width: auto;">Go to Dashboard</button>
+                </div>`;
         }
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error fetching students:', error);
+        document.getElementById('moduleContent').innerHTML = `
+            <div class="card">
+                <p style="color: var(--danger); font-weight: 600;">Critical Error: Failed to connect to server</p>
+                <p style="font-size: 12px; color: var(--text-muted);">${error.message}</p>
+                <button onclick="loadModule('students-out')" class="btn-modern" style="margin-top: 1rem; width: auto;">Retry</button>
+            </div>`;
     }
 }
 
