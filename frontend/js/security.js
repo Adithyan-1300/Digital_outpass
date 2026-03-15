@@ -362,10 +362,12 @@ async function loadStudentsOut() {
                             <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${student.reason || '-'}</td>
                              <td>
                                 <div style="display: flex; justify-content: flex-end;">
+                                    ${student.expected_return_time === '23:59:00' ? '' : `
                                     <button onclick="recordEntryManual(${student.outpass_id})" 
                                             class="btn-modern" style="background: ${student.is_late ? 'var(--danger)' : 'var(--success)'}; color: white; width: auto; padding: 6px 16px; border-radius: 8px;">
                                         Mark Entry
                                     </button>
+                                    `}
                                 </div>
                             </td>
                         </tr>
