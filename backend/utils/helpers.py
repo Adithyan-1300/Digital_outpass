@@ -9,6 +9,8 @@ import qrcode
 import io
 import base64
 from datetime import datetime, timedelta
+from functools import wraps
+import os
 from flask import session, jsonify, request
 
 def get_ist_now():
