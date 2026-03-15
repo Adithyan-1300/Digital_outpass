@@ -79,6 +79,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 const emailGroup = document.getElementById('emailGroup');
                 const regEmail = document.getElementById('regEmail');
                 const regDept = document.getElementById('regDept');
+                const yearGroup = document.getElementById('yearGroup');
+                const regYear = document.getElementById('regYear');
 
                 const roleLabels = {
                     'student': 'Student',
@@ -117,9 +119,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (role === 'student') {
                     if (regNoGroup) regNoGroup.style.display = 'block';
+                    if (yearGroup) yearGroup.style.display = 'block';
                     if (parentNameGroup) parentNameGroup.style.display = 'block';
                     if (parentMobileGroup) parentMobileGroup.style.display = 'block';
                     if (regNoInput) regNoInput.required = true;
+                    if (regYear) regYear.required = true;
                     if (parentNameInput) parentNameInput.required = true;
                     if (parentMobileInput) parentMobileInput.required = true;
 
@@ -127,9 +131,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (profileImgInput) profileImgInput.required = true;
                 } else {
                     if (regNoGroup) regNoGroup.style.display = 'none';
+                    if (yearGroup) yearGroup.style.display = 'none';
                     if (parentNameGroup) parentNameGroup.style.display = 'none';
                     if (parentMobileGroup) parentMobileGroup.style.display = 'none';
                     if (regNoInput) regNoInput.required = false;
+                    if (regYear) regYear.required = false;
                     if (parentNameInput) parentNameInput.required = false;
                     if (parentMobileInput) parentMobileInput.required = false;
 

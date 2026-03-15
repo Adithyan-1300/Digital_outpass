@@ -22,6 +22,13 @@ async function loadSecurityDashboard() {
                         </div>
                     </div>
                     <div class="modern-card">
+                        <div class="stat-icon" style="background: rgba(255, 149, 0, 0.1); color: #ff9500;"><i class="ph ph-clock-countdown"></i></div>
+                        <div>
+                            <div class="stat-value">${stats.overdue_count || 0}</div>
+                            <div class="stat-label">Overdue Returns</div>
+                        </div>
+                    </div>
+                    <div class="modern-card">
                         <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="ph ph-arrow-square-out"></i></div>
                         <div>
                             <div class="stat-value">${stats.exits_today || 0}</div>
@@ -346,15 +353,19 @@ async function loadStudentsOut() {
                             </td>
                             <td>${student.dept_name}</td>
                             <td>${app.formatDateTime(student.actual_exit_time)}</td>
-                            <td style="color: var(--warning); font-weight: 500;">${student.expected_return_time === '23:59:00' ? 'Not Returning Today' : app.formatTime(student.expected_return_time)}</td>
+                            <td>
+                                <div style="color: ${student.is_late ? 'var(--danger)' : 'var(--warning)'}; font-weight: 600;">
+                                    ${student.expected_return_time === '23:59:00' ? 'Not Returning Today' : app.formatTime(student.expected_return_time)}
+                                    ${student.is_late ? ' <span class="badge-rejected" style="font-size: 10px; padding: 2px 6px;">LATE</span>' : ''}
+                                </div>
+                            </td>
                             <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${student.reason || '-'}</td>
                              <td>
                                 <div style="display: flex; justify-content: flex-end;">
-                                    ${student.expected_return_time === '23:59:00' ?
-                            `<span style="color: var(--text-muted); font-size: 11px; font-weight: 600;">NO ENTRY REQUIRED</span>` :
-                            `<button onclick="recordEntryManual(${student.outpass_id})" 
-                                                class="btn-modern" style="background: rgba(16, 185, 129, 0.1); color: var(--success); width: auto; padding: 6px 16px;">Entry</button>`
-                        }
+                                    <button onclick="recordEntryManual(${student.outpass_id})" 
+                                            class="btn-modern" style="background: ${student.is_late ? 'var(--danger)' : 'var(--success)'}; color: white; width: auto; padding: 6px 16px; border-radius: 8px;">
+                                        Mark Entry
+                                    </button>
                                 </div>
                             </td>
                         </tr>

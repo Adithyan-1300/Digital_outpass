@@ -48,6 +48,9 @@ async function loadHODDashboard() {
                             <button onclick="loadModule('dept-statistics')" class="btn-modern" style="background: #f1f5f9; color: var(--text-main); width: auto;">
                                 <i class="ph ph-presentation"></i> Detailed Reports
                             </button>
+                            <button onclick="window.open(`${app.API_BASE}/hod/download-history`, '_blank')" class="btn-modern" style="background: #eff6ff; color: #1d4ed8; width: auto; border: 1px solid #dbeafe;">
+                                <i class="ph ph-file-pdf"></i> Download Monthly Dept Report
+                            </button>
                         </div>
                     </div>
                     <div style="width: 100%; background: #f8fafc; border-radius: 1.25rem; padding: 2rem; border: 1px solid #f1f5f9; text-align: center;">
@@ -357,8 +360,13 @@ async function loadAllOutpasses() {
                         <h2 style="font-size: 32px; font-weight: 700; letter-spacing: -0.02em;">Departmental Audit Registry</h2>
                         <p style="color: var(--text-muted);">Historical tracking of all departmental outpass transactions.</p>
                     </div>
-                    <div style="background: var(--primary-gradient); padding: 10px 20px; border-radius: 40px; color: white; font-size: 14px; font-weight: 700; box-shadow: var(--shadow-md);">
-                        ${data.outpasses.length} Synchronized Records
+                    <div style="display: flex; gap: 1rem;">
+                        <button onclick="window.open(`${app.API_BASE}/hod/download-history`, '_blank')" class="btn-modern" style="width: auto; background: #eff6ff; color: #1d4ed8;">
+                            <i class="ph ph-file-pdf"></i> Export PDF History
+                        </button>
+                        <div style="background: var(--primary-gradient); padding: 10px 20px; border-radius: 40px; color: white; font-size: 14px; font-weight: 700; box-shadow: var(--shadow-md);">
+                            ${data.outpasses.length} Synchronized Records
+                        </div>
                     </div>
                 </div>
                 

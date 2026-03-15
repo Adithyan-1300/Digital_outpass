@@ -380,8 +380,31 @@ def get_students_currently_out():
         
         students = cursor.fetchall()
         
-        # Format datetime
+        # Format datetime and check for late status
+        now_time = datetime.now()
         for student in students:
+            # Check if late: NOW > expected_return_time on the same day OR out_date < today
+            is_late = False
+            out_date = student['out_date']
+            exp_return = student['expected_return_time']
+            
+            # Convert time to datetime for comparison if needed
+            if isinstance(exp_return, timedelta):
+                # MySQL TIME returns timedelta
+                total_seconds = exp_return.total_seconds()
+                hours = int(total_seconds // 3600)
+                minutes = int((total_seconds % 3600) // 60)
+                exp_datetime = datetime.combine(out_date, datetime.min.time().replace(hour=hours, minute=minutes))
+            else:
+                exp_datetime = datetime.combine(out_date, exp_return)
+            
+            # If expected return is 23:59:00, it's usually "Not Returning Today"
+            if str(exp_return) == '23:59:00':
+                is_late = False # Won't be marked late today
+            elif now_time > exp_datetime:
+                is_late = True
+
+            student['is_late'] = is_late
             student['out_date'] = format_date(student['out_date'])
             student['out_time'] = format_time(student['out_time'])
             student['expected_return_time'] = format_time(student['expected_return_time'])
@@ -435,6 +458,20 @@ def get_security_stats():
         """)
         entries_today = cursor.fetchone()
         
+        # Overdue students
+        cursor.execute("""
+            SELECT COUNT(*) as overdue_count
+            FROM outpasses
+            WHERE actual_exit_time IS NOT NULL 
+            AND actual_entry_time IS NULL
+            AND expected_return_time != '23:59:00'
+            AND (
+                DATE(out_date) < CURDATE()
+                OR (DATE(out_date) = CURDATE() AND TIME(expected_return_time) < TIME(NOW()))
+            )
+        """)
+        overdue = cursor.fetchone()
+        
         cursor.close()
         conn.close()
         
@@ -443,7 +480,8 @@ def get_security_stats():
             'stats': {
                 'students_currently_out': currently_out['students_out'],
                 'exits_today': exits_today['exits_today'],
-                'entries_today': entries_today['entries_today']
+                'entries_today': entries_today['entries_today'],
+                'overdue_count': overdue['overdue_count']
             }
         }), 200
         

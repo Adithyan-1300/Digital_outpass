@@ -102,10 +102,12 @@ async function loadManageUsers() {
                         <thead>
                             <tr>
                                 <th>Identity</th>
-                                <th>Reference</th>
-                                <th>Role / Dept</th>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Dept/Year</th>
+                                <th>Username/Email</th>
                                 <th>Status</th>
-                                <th style="text-align: right;">Actions</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -120,6 +122,10 @@ async function loadManageUsers() {
                     'security': 'rgba(100, 116, 139, 0.1); color: var(--text-muted);'
                 };
 
+                const deptYear = user.role === 'student' ?
+                    `${user.dept_code || 'N/A'}${user.academic_year ? ` (Yr ${user.academic_year})` : ''}` :
+                    (user.dept_code || '-');
+
                 html += `
                     <tr data-role="${user.role}">
                         <td>
@@ -129,17 +135,19 @@ async function loadManageUsers() {
                                 </div>
                                 <div>
                                     <div style="font-weight: 600;">${user.full_name}</div>
-                                    <div style="font-size: 12px; color: var(--text-muted);">${user.email}</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">${user.registration_no || ''}</div>
                                 </div>
                             </div>
                         </td>
                         <td>
-                            <div style="font-size: 13px;">@${user.username}</div>
-                            <div style="font-size: 11px; color: var(--text-muted);">UID: #${user.user_id}</div>
+                            <span class="status-badge" style="background: ${roleColors[user.role] || ''};">${user.role.toUpperCase()}</span>
                         </td>
                         <td>
-                            <span class="status-badge" style="background: ${roleColors[user.role] || ''}; margin-bottom: 4px;">${user.role.toUpperCase()}</span>
-                            <div style="font-size: 12px; color: var(--text-muted);">${user.dept_name || 'No Dept'}</div>
+                            <div style="font-weight: 500;">${deptYear}</div>
+                        </td>
+                        <td>
+                            <div style="font-size: 13px;">@${user.username}</div>
+                            <div style="font-size: 11px; color: var(--text-muted);">${user.email}</div>
                         </td>
                         <td>
                             <span class="status-badge ${user.is_active ? 'badge-approved' : 'badge-rejected'}">

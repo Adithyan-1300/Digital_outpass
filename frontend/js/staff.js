@@ -50,6 +50,9 @@ async function loadStaffDashboard() {
                         <button onclick="loadModule('my-students')" class="btn-modern" style="background: #f1f5f9; color: var(--text-main); width: auto;">
                             <i class="ph ph-users-four"></i> My Students
                         </button>
+                        <button onclick="window.open(`${app.API_BASE}/staff/download-history`, '_blank')" class="btn-modern" style="background: #eff6ff; color: #1d4ed8; width: auto; border: 1px solid #dbeafe;">
+                            <i class="ph ph-file-pdf"></i> Download Monthly History
+                        </button>
                     </div>
                 </div>
             `;
@@ -291,8 +294,11 @@ async function loadMyStudents() {
 
         if (data.success) {
             let html = `
-                <div class="mb-8">
+                <div class="mb-8" style="display: flex; justify-content: space-between; align-items: center;">
                     <h2 class="login-title" style="font-size: 1.75rem;">My Students</h2>
+                    <button onclick="window.open(`${app.API_BASE}/staff/download-history`, '_blank')" class="btn-modern" style="width: auto; background: #eff6ff; color: #1d4ed8;">
+                        <i class="ph ph-file-pdf"></i> Export PDF History
+                    </button>
                 </div>
                 <div class="table-wrapper">
                     <div class="table-responsive">

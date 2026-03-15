@@ -156,6 +156,7 @@ def check_session():
             'dept_name': user.get('dept_name'),
             'dept_code': user.get('dept_code'),
             'registration_no': user.get('registration_no'),
+            'academic_year': user.get('academic_year'),
             'phone': user.get('phone'),
             'parent_name': user.get('parent_name'),
             'parent_mobile': user.get('parent_mobile'),
@@ -271,7 +272,7 @@ def register():
             required_fields.append('email')
             
         if role == 'student':
-            required_fields.extend(['registration_no', 'parent_name', 'parent_mobile'])
+            required_fields.extend(['registration_no', 'parent_name', 'parent_mobile', 'academic_year'])
             
         for field in required_fields:
             if not data.get(field):
@@ -326,8 +327,8 @@ def register():
             # Insert new user
             query = """
                 INSERT INTO users (username, email, password_hash, full_name, role, 
-                                 registration_no, phone, dept_id, parent_name, parent_mobile, profile_image)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                 registration_no, phone, dept_id, academic_year, parent_name, parent_mobile, profile_image)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             # Sanitize optional fields: convert empty strings to None (stored as NULL in DB)
             reg_no = data.get('registration_no', '').strip() or None
@@ -342,6 +343,7 @@ def register():
                 reg_no,
                 phone,
                 data.get('dept_id') or None,
+                data.get('academic_year') or None,
                 p_name,
                 parent_mobile,
                 profile_image_path

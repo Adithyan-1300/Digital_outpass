@@ -9,7 +9,9 @@ from backend.utils.helpers import (
     role_required, format_datetime, format_date, format_time,
     log_action, get_client_ip, generate_unique_qr_token, generate_qr_code
 )
+from backend.utils.pdf_generator import generate_staff_monthly_report
 from datetime import datetime, timedelta
+from flask import Response
 
 staff_bp = Blueprint('staff', __name__, url_prefix='/api/staff')
 
@@ -383,3 +385,61 @@ def get_staff_stats():
     except Exception as e:
         print(f"Get stats error: {e}")
         return jsonify({'success': False, 'message': 'Failed to fetch statistics'}), 500
+
+@staff_bp.route('/download-history', methods=['GET'])
+@role_required('staff')
+def download_history():
+    """Download monthly outpass history report for staff"""
+    try:
+        conn = get_db_connection()
+        if not conn:
+            return jsonify({'success': False, 'message': 'Database connection failed'}), 500
+        
+        cursor = conn.cursor(dictionary=True)
+        
+        # Get processed requests for this month for this advisor
+        query = """
+            SELECT 
+                o.*,
+                s.full_name as student_name,
+                s.registration_no
+            FROM outpasses o
+            JOIN users s ON o.student_id = s.user_id
+            WHERE o.advisor_id = %s 
+            AND o.advisor_status != 'pending'
+            AND MONTH(o.advisor_action_time) = MONTH(CURRENT_DATE())
+            AND YEAR(o.advisor_action_time) = YEAR(CURRENT_DATE())
+            ORDER BY o.advisor_action_time DESC
+        """
+        
+        cursor.execute(query, (session['user_id'],))
+        records = cursor.fetchall()
+        
+        # Format dates for PDF
+        for rec in records:
+            rec['out_date'] = format_date(rec['out_date'])
+            
+        # Get staff name
+        cursor.execute("SELECT full_name FROM users WHERE user_id = %s", (session['user_id'],))
+        staff_user = cursor.fetchone()
+        staff_name = staff_user['full_name'] if staff_user else 'Staff'
+        
+        cursor.close()
+        conn.close()
+        
+        now = datetime.now()
+        month_name = now.strftime('%B')
+        year = now.strftime('%Y')
+        
+        pdf_bytes = generate_staff_monthly_report(staff_name, month_name, year, records)
+        
+        # Use Response to return binary PDF
+        return Response(
+            pdf_bytes,
+            mimetype="application/pdf",
+            headers={"Content-disposition": f"attachment; filename=Outpass_History_{month_name}_{year}.pdf"}
+        )
+        
+    except Exception as e:
+        print(f"Download history error: {e}")
+        return jsonify({'success': False, 'message': 'Failed to generate PDF history'}), 500

@@ -33,6 +33,7 @@ def get_all_users():
                 u.full_name,
                 u.role,
                 u.registration_no,
+                u.academic_year,
                 u.phone,
                 u.is_active,
                 u.created_at,
@@ -99,8 +100,8 @@ def add_user():
             query = """
                 INSERT INTO users 
                 (username, email, password_hash, full_name, role, dept_id, 
-                 registration_no, phone, advisor_id)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                 registration_no, academic_year, phone, advisor_id)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             
             cursor.execute(query, (
@@ -111,6 +112,7 @@ def add_user():
                 data['role'],
                 data.get('dept_id'),
                 data.get('registration_no'),
+                data.get('academic_year'),
                 data.get('phone'),
                 data.get('advisor_id')
             ))
@@ -175,6 +177,9 @@ def update_user(user_id):
         if 'advisor_id' in data:
             updates.append("advisor_id = %s")
             params.append(data['advisor_id'])
+        if 'academic_year' in data:
+            updates.append("academic_year = %s")
+            params.append(data['academic_year'])
         if 'is_active' in data:
             updates.append("is_active = %s")
             params.append(data['is_active'])

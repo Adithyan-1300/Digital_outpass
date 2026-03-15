@@ -10,7 +10,9 @@ from backend.utils.helpers import (
     log_action, get_client_ip, generate_unique_qr_token, generate_qr_code,
     send_sms_notification
 )
+from backend.utils.pdf_generator import generate_hod_monthly_report
 from datetime import datetime, timedelta
+from flask import Response
 
 hod_bp = Blueprint('hod', __name__, url_prefix='/api/hod')
 
@@ -495,3 +497,98 @@ def get_all_department_outpasses():
     except Exception as e:
         print(f"Get all outpasses error: {e}")
         return jsonify({'success': False, 'message': 'Failed to fetch outpasses'}), 500
+
+@hod_bp.route('/download-history', methods=['GET'])
+@role_required('hod')
+def download_history():
+    """Download monthly outpass history report for HOD"""
+    try:
+        conn = get_db_connection()
+        if not conn:
+            return jsonify({'success': False, 'message': 'Database connection failed'}), 500
+        
+        cursor = conn.cursor(dictionary=True)
+        
+        # Get HOD's department
+        cursor.execute("SELECT u.dept_id, d.dept_name FROM users u JOIN departments d ON u.dept_id = d.dept_id WHERE u.user_id = %s", (session['user_id'],))
+        hod_info = cursor.fetchone()
+        
+        if not hod_info:
+            cursor.close()
+            conn.close()
+            return jsonify({'success': False, 'message': 'Department not found'}), 404
+            
+        dept_id = hod_info['dept_id']
+        dept_name = hod_info['dept_name']
+        
+        # Get department name and records for current month
+        # Improved query to join with users and get academic_year
+        current_year = datetime.now().year
+        current_month = datetime.now().month
+        cursor.execute("""
+            SELECT o.*, u.full_name, u.registration_no, u.academic_year, d.dept_name
+            FROM outpasses o
+            JOIN users u ON o.student_id = u.user_id
+            JOIN departments d ON u.dept_id = d.dept_id
+            WHERE u.dept_id = %s 
+            AND o.final_status IN ('approved', 'used')
+            AND (
+                (o.advisor_action_time IS NOT NULL AND MONTH(o.advisor_action_time) = %s AND YEAR(o.advisor_action_time) = %s)
+                OR (o.hod_action_time IS NOT NULL AND MONTH(o.hod_action_time) = %s AND YEAR(o.hod_action_time) = %s)
+            )
+            ORDER BY u.academic_year ASC, o.out_date DESC
+        """, (dept_id, current_month, current_year, current_month, current_year))
+        records = cursor.fetchall()
+        
+        # Group by year logic
+        # Assuming format like ABCD2023001 or 2023CSE001
+        # We'll try to extract the 4-digit year from the registration number
+        import re
+        # current_year and current_month are already defined above
+        # Academic year transition (assuming July start) - not strictly needed for grouping by academic_year column
+        
+        records_by_year = {} # Initialize as empty dict to allow dynamic keys
+        
+        for rec in records:
+            rec['out_date'] = format_date(rec['out_date'])
+            # Use academic_year if available, otherwise fallback to registration_no inference
+            year_level = rec.get('academic_year')
+            
+            if not year_level:
+                # Fallback to existing logic if academic_year is missing
+                reg_no = rec.get('registration_no', '')
+                match = re.search(r'(\d{4})', reg_no)
+                if match:
+                    batch_year = int(match.group(1))
+                    # Assuming academic_start_year is defined if this fallback is used
+                    # For simplicity, let's re-calculate academic_start_year if needed
+                    academic_start_year = current_year if current_month >= 7 else current_year - 1
+                    calc_year = academic_start_year - batch_year + 1
+                    year_level = min(max(calc_year, 1), 4) # Cap between 1 and 4
+                else:
+                    year_level = 0 # Unknown
+            
+            year_label = f"Year {year_level}" if year_level > 0 else "Unknown Year"
+            
+            if year_label not in records_by_year:
+                records_by_year[year_label] = []
+            records_by_year[year_label].append(rec)
+     
+        cursor.close()
+        conn.close()
+        
+        now = datetime.now()
+        month_name = now.strftime('%B')
+        year = now.strftime('%Y')
+        
+        pdf_bytes = generate_hod_monthly_report(dept_name, month_name, year, records_by_year)
+        
+        return Response(
+            pdf_bytes,
+            mimetype="application/pdf",
+            headers={"Content-disposition": f"attachment; filename=Dept_Outpass_History_{month_name}_{year}.pdf"}
+        )
+        
+    except Exception as e:
+        print(f"Download history HOD error: {e}")
+        return jsonify({'success': False, 'message': 'Failed to generate PDF history'}), 500
