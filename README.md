@@ -1,4 +1,4 @@
-# Smart Outpass Management System - Setup Guide
+# Digital Outpass Management System - Setup Guide
 
 ## Project Overview
 A complete college outpass management system with role-based access for Students, Staff, HOD, Security, and Admin with QR code verification.
