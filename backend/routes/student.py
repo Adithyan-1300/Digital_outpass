@@ -44,9 +44,9 @@ def apply_outpass():
         
         cursor = conn.cursor(dictionary=True)
         
-        # Get student's advisor and department
+        # Get student's advisor, department, and academic year
         cursor.execute("""
-            SELECT u.advisor_id, u.dept_id, d.dept_name
+            SELECT u.advisor_id, u.dept_id, u.academic_year, d.dept_name
             FROM users u
             LEFT JOIN departments d ON u.dept_id = d.dept_id
             WHERE u.user_id = %s
@@ -61,20 +61,33 @@ def apply_outpass():
             
         advisor_id = student_info['advisor_id']
         
-        # Fallback: If no advisor is assigned, find any active staff in the same department
+        # Fallback: If no advisor is assigned, find STAFF in the SAME DEPT and SAME YEAR
         if not advisor_id:
             cursor.execute("""
                 SELECT user_id FROM users 
-                WHERE role = 'staff' AND dept_id = %s AND is_active = TRUE 
+                WHERE role = 'staff' 
+                AND dept_id = %s 
+                AND academic_year = %s
+                AND is_active = TRUE 
                 LIMIT 1
-            """, (student_info['dept_id'],))
+            """, (student_info['dept_id'], student_info['academic_year']))
             fallback_staff = cursor.fetchone()
             if fallback_staff:
                 advisor_id = fallback_staff['user_id']
             else:
-                cursor.close()
-                conn.close()
-                return jsonify({'success': False, 'message': 'No staff/advisor available in your department. Contact admin.'}), 400
+                # Absolute Fallback: if no year-matched staff, find any staff in dept
+                cursor.execute("""
+                    SELECT user_id FROM users 
+                    WHERE role = 'staff' AND dept_id = %s AND is_active = TRUE 
+                    LIMIT 1
+                """, (student_info['dept_id'],))
+                fallback_any_staff = cursor.fetchone()
+                if fallback_any_staff:
+                    advisor_id = fallback_any_staff['user_id']
+                else:
+                    cursor.close()
+                    conn.close()
+                    return jsonify({'success': False, 'message': 'No staff/advisor available in your department. Contact admin.'}), 400
         
         # Get HOD for department
         cursor.execute("""
