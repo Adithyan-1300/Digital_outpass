@@ -564,7 +564,7 @@ def download_history():
                     batch_year = int(match.group(1))
                     academic_start_year = current_year if current_month >= 7 else current_year - 1
                     calc_year = academic_start_year - batch_year + 1
-                    year_level = min(max(calc_year, 1), 4) # Cap between 1 and 4
+                    year_level = min(max(calc_year, 1), 3) # Cap between 1 and 3
                 else:
                     year_level = 0 # Unknown
             
