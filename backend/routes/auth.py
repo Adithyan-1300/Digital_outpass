@@ -275,6 +275,9 @@ def register():
         if role == 'student':
             required_fields.extend(['registration_no', 'parent_name', 'parent_mobile', 'academic_year'])
             
+        if role == 'staff':
+            required_fields.append('academic_year')
+            
         for field in required_fields:
             if not data.get(field):
                 return jsonify({'success': False, 'message': f'{field} is required for {role}'}), 400

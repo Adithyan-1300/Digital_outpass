@@ -199,13 +199,21 @@ def verify_qr():
             outpass['is_qr_used']
         )
         
+        # Check if it's a returning student (exited but not returned)
+        is_returning = False
+        if outpass['actual_exit_time'] and not outpass['actual_entry_time']:
+            is_returning = True
+            is_valid = True # Treat as valid for entry recording
+            error_message = None
+            
         cursor.close()
         conn.close()
         
         return jsonify({
             'success': True,
             'valid': is_valid,
-            'message': error_message if not is_valid else 'QR code is valid',
+            'is_returning': is_returning,
+            'message': error_message if not is_valid else ('Ready for Entry' if is_returning else 'QR code is valid'),
             'student': {
                 'name': outpass['student_name'],
                 'registration_no': outpass['registration_no'],
@@ -216,7 +224,9 @@ def verify_qr():
                 'outpass_id': outpass['outpass_id'],
                 'out_date': format_date(outpass['out_date']),
                 'out_time': format_time(outpass['out_time']),
-                'status': outpass['final_status']
+                'expected_return_time': format_time(outpass['expected_return_time']),
+                'status': outpass['final_status'],
+                'reason': outpass['reason'] if is_returning else None
             } if is_valid else None
         }), 200
         
@@ -318,6 +328,8 @@ def get_recent_activity():
         cursor.execute("""
             SELECT 
                 o.outpass_id,
+                o.out_date,
+                o.expected_return_time,
                 o.actual_exit_time,
                 o.actual_entry_time,
                 s.full_name as student_name,
@@ -335,10 +347,21 @@ def get_recent_activity():
         
         activities = cursor.fetchall()
         
-        # Format datetime
+        # Format datetime and check late status
         for activity in activities:
+            is_late = False
+            if activity['actual_entry_time']:
+                is_late = check_is_late(
+                    activity['out_date'], 
+                    activity['expected_return_time'], 
+                    activity['actual_entry_time']
+                )
+            
+            activity['is_late'] = is_late
+            activity['out_date'] = format_date(activity['out_date'])
             activity['actual_exit_time'] = format_datetime(activity['actual_exit_time'])
             activity['actual_entry_time'] = format_datetime(activity['actual_entry_time'])
+            activity['expected_return_time'] = format_time(activity['expected_return_time'])
         
         cursor.close()
         conn.close()

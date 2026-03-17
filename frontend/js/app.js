@@ -131,15 +131,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (regEmail) regEmail.required = false;
                 }
 
-                if (role === 'student') {
-                    if (regNoGroup) regNoGroup.style.display = 'block';
+                if (role === 'student' || role === 'staff') {
+                    if (regNoGroup) regNoGroup.style.display = role === 'student' ? 'block' : 'none';
                     if (yearGroup) yearGroup.style.display = 'block';
-                    if (parentNameGroup) parentNameGroup.style.display = 'block';
-                    if (parentMobileGroup) parentMobileGroup.style.display = 'block';
-                    if (regNoInput) regNoInput.required = true;
+                    if (parentNameGroup) parentNameGroup.style.display = role === 'student' ? 'block' : 'none';
+                    if (parentMobileGroup) parentMobileGroup.style.display = role === 'student' ? 'block' : 'none';
+                    if (regNoInput) regNoInput.required = role === 'student';
                     if (regYear) regYear.required = true;
-                    if (parentNameInput) parentNameInput.required = true;
-                    if (parentMobileInput) parentMobileInput.required = true;
+                    if (parentNameInput) parentNameInput.required = role === 'student';
+                    if (parentMobileInput) parentMobileInput.required = role === 'student';
 
                     const profileImgInput = document.getElementById('reg_profile_image');
                     if (profileImgInput) profileImgInput.required = true;

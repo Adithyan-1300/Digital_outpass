@@ -8,7 +8,7 @@ class OutpassPDF(FPDF):
         # Logo placeholder
         self.set_font('helvetica', 'B', 20)
         self.set_text_color(16, 185, 129) # Primary color
-        self.cell(0, 10, 'SMART OUTPASS SYSTEM', ln=True, align='C')
+        self.cell(0, 10, 'Digital outpass system', ln=True, align='C')
         self.set_font('helvetica', '', 10)
         self.set_text_color(100, 116, 139) # Text muted
         self.cell(0, 10, f'Generated on: {get_ist_now().strftime("%d %b %Y, %I:%M %p")}', ln=True, align='C')

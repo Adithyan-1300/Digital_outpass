@@ -224,10 +224,11 @@ async function verifyQRCodeFromScan(qrCode) {
         const data = await response.json();
 
         if (data.valid) {
+            const isReturning = data.is_returning;
             resultDiv.innerHTML = `
-                <div class="success-message show" style="padding: 24px; border-radius: 12px; border: none; background: #ecfdf5; color: #065f46;">
-                    <div style="font-size: 48px; margin-bottom: 16px;">✓</div>
-                    <h3 style="margin-bottom: 20px;">Valid Outpass</h3>
+                <div class="success-message show" style="padding: 24px; border-radius: 12px; border: none; background: ${isReturning ? '#fff7ed' : '#ecfdf5'}; color: ${isReturning ? '#9a3412' : '#065f46'};">
+                    <div style="font-size: 48px; margin-bottom: 16px;">${isReturning ? '🏠' : '✓'}</div>
+                    <h3 style="margin-bottom: 20px;">${isReturning ? 'Returning Student' : 'Valid Outpass'}</h3>
                     
                     <div class="scan-profile-container">
                         ${data.student.profile_image ?
@@ -240,11 +241,19 @@ async function verifyQRCodeFromScan(qrCode) {
                         <p style="margin-bottom: 8px;"><strong>Student:</strong> ${data.student.name}</p>
                         <p style="margin-bottom: 8px;"><strong>Reg No:</strong> ${data.student.registration_no}</p>
                         <p style="margin-bottom: 8px;"><strong>Dept:</strong> ${data.student.department}</p>
-                        <p style="margin-bottom: 8px;"><strong>Reason:</strong> ${data.outpass.reason}</p>
+                        ${isReturning ? `<p style="margin-bottom: 8px;"><strong>Reason:</strong> ${data.outpass.reason || '-'}</p>` : `<p style="margin-bottom: 8px;"><strong>Reason:</strong> ${data.outpass.reason || '-'}</p>`}
+                        ${isReturning && data.outpass.expected_return_time ? `<p style="margin-bottom: 0; color: var(--danger);"><strong>Exp. Return:</strong> ${data.outpass.expected_return_time}</p>` : ''}
                     </div>
-                    <button onclick="recordExit('${qrCode}')" class="btn-modern btn-modern-primary" style="width: 100%;">
-                        Confirm Exit
-                    </button>
+                    
+                    ${isReturning ? `
+                        <button onclick="recordEntryManual(${data.outpass.outpass_id})" class="btn-modern" style="width: 100%; background: var(--primary); color: white;">
+                            Confirm Entry
+                        </button>
+                    ` : `
+                        <button onclick="recordExit('${qrCode}')" class="btn-modern btn-modern-primary" style="width: 100%;">
+                            Confirm Exit
+                        </button>
+                    `}
                 </div>
             `;
         } else {
@@ -406,10 +415,16 @@ async function recordEntryManual(outpassId) {
         });
 
         const data = await response.json();
-        alert(data.message);
-
+        
         if (data.success) {
+            if (data.is_late) {
+               alert('Entry recorded successfully (LATE) ⏰');
+            } else {
+               alert(data.message);
+            }
             loadModule('students-out');
+        } else {
+            alert(data.message);
         }
     } catch (error) {
         alert('Error recording entry');
@@ -464,6 +479,7 @@ async function loadRecentActivity() {
                                     <span class="status-badge ${status === 'Returned' ? 'badge-approved' : 'badge-pending'}">
                                         ${status}
                                     </span>
+                                    ${activity.is_late ? ' <span class="badge-rejected" style="font-size: 10px; padding: 2px 6px; margin-left: 4px;">LATE ⏰</span>' : ''}
                                 </div>
                             </td>
                         </tr>
