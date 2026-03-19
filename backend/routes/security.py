@@ -39,6 +39,7 @@ def scan_qr():
                 o.*,
                 s.full_name as student_name,
                 s.registration_no,
+                s.academic_year,
                 s.phone as student_phone,
                 s.profile_image,
                 d.dept_name,
@@ -217,6 +218,7 @@ def verify_qr():
             'student': {
                 'name': outpass['student_name'],
                 'registration_no': outpass['registration_no'],
+                'academic_year': outpass['academic_year'],
                 'department': outpass['dept_name'],
                 'profile_image': outpass['profile_image'].replace('uploads/', '', 1).lstrip('/') if outpass.get('profile_image') else None
             } if is_valid else None,
@@ -334,6 +336,7 @@ def get_recent_activity():
                 o.actual_entry_time,
                 s.full_name as student_name,
                 s.registration_no,
+                s.academic_year,
                 d.dept_name,
                 o.reason,
                 o.destination
@@ -395,6 +398,7 @@ def get_students_currently_out():
                 o.actual_exit_time,
                 s.full_name as student_name,
                 s.registration_no,
+                s.academic_year,
                 s.phone as student_phone,
                 d.dept_name,
                 o.destination

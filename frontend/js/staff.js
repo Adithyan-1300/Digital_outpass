@@ -112,7 +112,9 @@ async function loadPendingRequests() {
                     html += `
                         <tr>
                             <td style="font-weight: 600;">${req.student_name}</td>
-                            <td style="color: var(--secondary); font-size: 13px; font-weight: 600;">${req.dept_name}</td>
+                            <td style="color: var(--secondary); font-size: 13px; font-weight: 600;">
+                                ${app.formatYear(req.academic_year)} - ${req.dept_name}
+                            </td>
                             <td>${req.registration_no}</td>
                             <td>${app.formatDate(req.out_date)}</td>
                             <td>${app.formatTime(req.out_time)}</td>
@@ -322,7 +324,9 @@ async function loadMyStudents() {
                 html += `
                     <tr>
                         <td>${s.full_name}</td>
-                        <td style="color: var(--secondary); font-size: 13px; font-weight: 600;">${s.dept_name || 'N/A'}</td>
+                        <td style="color: var(--secondary); font-size: 13px; font-weight: 600;">
+                            ${app.formatYear(s.academic_year)} - ${s.dept_name || 'N/A'}
+                        </td>
                         <td>${s.registration_no}</td>
                         <td>${s.email}</td>
                         <td>${s.total_outpasses || 0}</td>
@@ -358,7 +362,7 @@ async function viewStudentHistory(studentId) {
                         <tbody>`;
 
             data.history.forEach(h => {
-                html += `<tr><td style="color: var(--secondary); font-size: 13px; font-weight: 600;">${data.student.dept_name}</td><td>${app.formatDate(h.out_date)}</td><td>${h.reason}</td><td>${app.getStatusBadge(h.final_status)}</td></tr>`;
+                html += `<tr><td style="color: var(--secondary); font-size: 13px; font-weight: 600;">${app.formatYear(data.student.academic_year)} - ${data.student.dept_name}</td><td>${app.formatDate(h.out_date)}</td><td>${h.reason}</td><td>${app.getStatusBadge(h.final_status)}</td></tr>`;
             });
 
             html += `</tbody></table></div></div>`;

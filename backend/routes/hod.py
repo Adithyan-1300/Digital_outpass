@@ -43,6 +43,7 @@ def get_pending_approvals():
                 o.*,
                 s.full_name as student_name,
                 s.registration_no,
+                s.academic_year,
                 s.email as student_email,
                 s.phone as student_phone,
                 s.parent_name,
@@ -454,6 +455,7 @@ def get_all_department_outpasses():
                 o.*,
                 s.full_name as student_name,
                 s.registration_no,
+                s.academic_year,
                 s.parent_mobile,
                 a.full_name as advisor_name,
                 d.dept_name

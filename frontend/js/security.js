@@ -240,6 +240,7 @@ async function verifyQRCodeFromScan(qrCode) {
                     <div style="text-align: left; background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
                         <p style="margin-bottom: 8px;"><strong>Student:</strong> ${data.student.name}</p>
                         <p style="margin-bottom: 8px;"><strong>Reg No:</strong> ${data.student.registration_no}</p>
+                        <p style="margin-bottom: 8px;"><strong>Year:</strong> ${app.formatYear(data.student.academic_year)}</p>
                         <p style="margin-bottom: 8px;"><strong>Dept:</strong> ${data.student.department}</p>
                         ${isReturning ? `<p style="margin-bottom: 8px;"><strong>Reason:</strong> ${data.outpass.reason || '-'}</p>` : `<p style="margin-bottom: 8px;"><strong>Reason:</strong> ${data.outpass.reason || '-'}</p>`}
                         ${isReturning && data.outpass.expected_return_time ? `<p style="margin-bottom: 0; color: var(--danger);"><strong>Exp. Return:</strong> ${data.outpass.expected_return_time}</p>` : ''}
@@ -360,7 +361,10 @@ async function loadStudentsOut() {
                                 <div style="font-weight: 600;">${student.student_name}</div>
                                 <div style="font-size: 12px; color: var(--text-muted);">${student.registration_no}</div>
                             </td>
-                            <td>${student.dept_name}</td>
+                            <td>
+                <div style="font-weight: 600; color: var(--secondary); font-size: 13px;">${app.formatYear(student.academic_year)}</div>
+                <div style="font-size: 12px; color: var(--text-muted);">${student.dept_name}</div>
+            </td>
                             <td>${app.formatDateTime(student.actual_exit_time)}</td>
                             <td>
                                 <div style="color: ${student.is_late ? 'var(--danger)' : 'var(--warning)'}; font-weight: 600;">
@@ -470,7 +474,10 @@ async function loadRecentActivity() {
                                 <div style="font-weight: 600;">${activity.student_name}</div>
                                 <div style="font-size: 12px; color: var(--text-muted);">${activity.registration_no}</div>
                             </td>
-                            <td>${activity.dept_name}</td>
+                            <td>
+                <div style="font-weight: 600; color: var(--secondary); font-size: 13px;">${app.formatYear(activity.academic_year)}</div>
+                <div style="font-size: 12px; color: var(--text-muted);">${activity.dept_name}</div>
+            </td>
                             <td>${app.formatDateTime(activity.actual_exit_time)}</td>
                             <td>${activity.actual_entry_time ? app.formatDateTime(activity.actual_entry_time) : '<span style="color: var(--danger);">Still Out</span>'}</td>
                             <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${activity.reason}</td>

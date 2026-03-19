@@ -32,6 +32,7 @@ def get_pending_requests():
                 o.*,
                 s.full_name as student_name,
                 s.registration_no,
+                s.academic_year,
                 s.email as student_email,
                 s.phone as student_phone,
                 s.parent_name,
@@ -279,6 +280,7 @@ def get_student_history(student_id):
                 'full_name': student['full_name'],
                 'registration_no': student['registration_no'],
                 'email': student['email'],
+                'academic_year': student.get('academic_year'),
                 'dept_name': student.get('dept_name', 'N/A')
             },
             'history': history
@@ -306,6 +308,7 @@ def get_my_students():
                 u.registration_no,
                 u.email,
                 u.phone,
+                u.academic_year,
                 u.parent_mobile,
                 d.dept_name,
                 COUNT(o.outpass_id) as total_outpasses,

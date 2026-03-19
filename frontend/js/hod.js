@@ -124,7 +124,9 @@ async function loadHODApprovals() {
                                 </div>
                             </td>
                             <td>
-                                <div style="font-weight: 600; color: var(--secondary); font-size: 14px;">${req.dept_name}</div>
+                                <div style="font-weight: 600; color: var(--secondary); font-size: 14px;">
+                                    ${app.formatYear(req.academic_year)} - ${req.dept_name}
+                                </div>
                             </td>
                             <td>
                                 <div style="font-weight: 600; color: var(--text-main);">${app.formatDate(req.out_date)}</div>
@@ -415,7 +417,9 @@ async function loadAllOutpasses() {
                                 </div>
                             </td>
                             <td>
-                                <div style="font-weight: 600; color: var(--secondary); font-size: 14px;">${op.dept_name}</div>
+                                <div style="font-weight: 600; color: var(--secondary); font-size: 14px;">
+                                    ${app.formatYear(op.academic_year)} - ${op.dept_name}
+                                </div>
                             </td>
                             <td>
                                 <div style="font-weight: 800; color: var(--text-main); font-size: 14px;">${app.formatDate(op.out_date)}</div>

@@ -7,6 +7,7 @@ var app = window.app = {
     formatDate: formatDate,
     formatDateTime: formatDateTime,
     formatTime: formatTime,
+    formatYear: formatYear,
     getStatusBadge: getStatusBadge,
     showQRModal: showQRModal
 };
@@ -774,6 +775,12 @@ function formatTime(timeString) {
     if (!timeString) return '-';
     const date = new Date('2000-01-01T' + timeString);
     return date.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true });
+}
+
+function formatYear(year) {
+    if (!year) return 'N/A';
+    const map = { '1': '1st Yr', '2': '2nd Yr', '3': '3rd Yr', '4': '4th Yr' };
+    return map[year.toString()] || `${year} Yr`;
 }
 
 function getStatusBadge(status) {
