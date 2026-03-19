@@ -86,6 +86,7 @@ async function loadPendingRequests() {
                         <thead>
                             <tr>
                                 <th>Student</th>
+                                <th>Dept</th>
                                 <th>Reg No</th>
                                 <th>Date</th>
                                 <th>Time</th>
@@ -111,6 +112,7 @@ async function loadPendingRequests() {
                     html += `
                         <tr>
                             <td style="font-weight: 600;">${req.student_name}</td>
+                            <td style="color: var(--secondary); font-size: 13px; font-weight: 600;">${req.dept_name}</td>
                             <td>${req.registration_no}</td>
                             <td>${app.formatDate(req.out_date)}</td>
                             <td>${app.formatTime(req.out_time)}</td>
@@ -306,6 +308,7 @@ async function loadMyStudents() {
                         <thead>
                             <tr>
                                 <th>Name</th>
+                                <th>Dept</th>
                                 <th>Reg No</th>
                                 <th>Email</th>
                                 <th>Total Outpasses</th>
@@ -319,6 +322,7 @@ async function loadMyStudents() {
                 html += `
                     <tr>
                         <td>${s.full_name}</td>
+                        <td style="color: var(--secondary); font-size: 13px; font-weight: 600;">${s.dept_name || 'N/A'}</td>
                         <td>${s.registration_no}</td>
                         <td>${s.email}</td>
                         <td>${s.total_outpasses || 0}</td>
@@ -350,11 +354,11 @@ async function viewStudentHistory(studentId) {
                 <div class="table-wrapper">
                     <div class="table-responsive">
                     <table class="modern-table">
-                        <thead><tr><th>Date</th><th>Reason</th><th>Status</th></tr></thead>
+                        <thead><tr><th>Dept</th><th>Date</th><th>Reason</th><th>Status</th></tr></thead>
                         <tbody>`;
 
             data.history.forEach(h => {
-                html += `<tr><td>${app.formatDate(h.out_date)}</td><td>${h.reason}</td><td>${app.getStatusBadge(h.final_status)}</td></tr>`;
+                html += `<tr><td style="color: var(--secondary); font-size: 13px; font-weight: 600;">${data.student.dept_name}</td><td>${app.formatDate(h.out_date)}</td><td>${h.reason}</td><td>${app.getStatusBadge(h.final_status)}</td></tr>`;
             });
 
             html += `</tbody></table></div></div>`;

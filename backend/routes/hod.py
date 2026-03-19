@@ -455,10 +455,12 @@ def get_all_department_outpasses():
                 s.full_name as student_name,
                 s.registration_no,
                 s.parent_mobile,
-                a.full_name as advisor_name
+                a.full_name as advisor_name,
+                d.dept_name
             FROM outpasses o
             JOIN users s ON o.student_id = s.user_id
             LEFT JOIN users a ON o.advisor_id = a.user_id
+            LEFT JOIN departments d ON s.dept_id = d.dept_id
             WHERE s.dept_id = %s
         """
         params = [hod_dept['dept_id']]

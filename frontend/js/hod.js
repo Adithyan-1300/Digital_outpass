@@ -89,6 +89,7 @@ async function loadHODApprovals() {
                         <thead>
                             <tr>
                                 <th>Student Profiles</th>
+                                <th>Department</th>
                                 <th>Departure Date</th>
                                 <th>Reasoning</th>
                                 <th>Verified Advisor</th>
@@ -121,6 +122,9 @@ async function loadHODApprovals() {
                                         <div style="font-size: 11px; color: var(--text-muted); font-family: monospace;">${req.registration_no}</div>
                                     </div>
                                 </div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 600; color: var(--secondary); font-size: 14px;">${req.dept_name}</div>
                             </td>
                             <td>
                                 <div style="font-weight: 600; color: var(--text-main);">${app.formatDate(req.out_date)}</div>
@@ -376,6 +380,7 @@ async function loadAllOutpasses() {
                         <thead>
                             <tr>
                                 <th>Student Identity</th>
+                                <th>Department</th>
                                 <th>Schedule Info</th>
                                 <th>Departure Intent</th>
                                 <th>Verification Status</th>
@@ -408,6 +413,9 @@ async function loadAllOutpasses() {
                                         <div style="font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-weight: 600;">#${op.registration_no}</div>
                                     </div>
                                 </div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 600; color: var(--secondary); font-size: 14px;">${op.dept_name}</div>
                             </td>
                             <td>
                                 <div style="font-weight: 800; color: var(--text-main); font-size: 14px;">${app.formatDate(op.out_date)}</div>

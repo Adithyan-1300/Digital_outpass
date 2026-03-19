@@ -223,8 +223,9 @@ def get_student_history(student_id):
         
         # Verify student belongs to advisor's advisees
         cursor.execute("""
-            SELECT * FROM users 
-            WHERE user_id = %s AND advisor_id = %s
+            SELECT u.*, d.dept_name FROM users u 
+            LEFT JOIN departments d ON u.dept_id = d.dept_id
+            WHERE u.user_id = %s AND u.advisor_id = %s
         """, (student_id, session['user_id']))
         
         student = cursor.fetchone()
@@ -232,8 +233,9 @@ def get_student_history(student_id):
         # If HOD, can view any student in department
         if not student and session['role'] == 'hod':
             cursor.execute("""
-                SELECT u.* FROM users u
+                SELECT u.*, d.dept_name FROM users u
                 JOIN users h ON u.dept_id = h.dept_id
+                LEFT JOIN departments d ON u.dept_id = d.dept_id
                 WHERE u.user_id = %s AND h.user_id = %s
             """, (student_id, session['user_id']))
             student = cursor.fetchone()
@@ -276,7 +278,8 @@ def get_student_history(student_id):
                 'user_id': student['user_id'],
                 'full_name': student['full_name'],
                 'registration_no': student['registration_no'],
-                'email': student['email']
+                'email': student['email'],
+                'dept_name': student.get('dept_name', 'N/A')
             },
             'history': history
         }), 200
