@@ -173,6 +173,7 @@ def verify_qr():
                 o.*,
                 s.full_name as student_name,
                 s.registration_no,
+                s.academic_year,
                 s.phone as student_phone,
                 s.profile_image,
                 d.dept_name
